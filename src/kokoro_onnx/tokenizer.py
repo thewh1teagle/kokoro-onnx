@@ -82,12 +82,10 @@ def get_vocab():
     return dicts
 
 VOCAB = get_vocab()
-def tokenize(text: str, lang = 'en-us'):
-    ps = phonemize(text, lang=lang)
-    if len(ps) > 510:
-        print("Warning: text is too long, truncating to 510 phonemes")
-        ps = ps[:510]
-    return [i for i in map(VOCAB.get, ps) if i is not None]
+def tokenize(phonemes):
+    if len(phonemes) > 510:
+        raise ValueError("text is too long, must be less than 510 phonemes")
+    return [i for i in map(VOCAB.get, phonemes) if i is not None]
 
 def phonemize(text, lang = 'en-us', norm=True):
     """
@@ -95,17 +93,16 @@ def phonemize(text, lang = 'en-us', norm=True):
     """
     if norm:
         text = normalize_text(text)
-
-    ps = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang))
+    phonemes = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang))
 
     
     
     # https://en.wiktionary.org/wiki/kokoro#English
-    ps = ps.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')
-    ps = ps.replace('ʲ', 'j').replace('r', 'ɹ').replace('x', 'k').replace('ɬ', 'l')
-    ps = re.sub(r'(?<=[a-zɹː])(?=hˈʌndɹɪd)', ' ', ps)
-    ps = re.sub(r' z(?=[;:,.!?¡¿—…"«»“” ]|$)', 'z', ps)
+    phonemes = phonemes.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')
+    phonemes = phonemes.replace('ʲ', 'j').replace('r', 'ɹ').replace('x', 'k').replace('ɬ', 'l')
+    phonemes = re.sub(r'(?<=[a-zɹː])(?=hˈʌndɹɪd)', ' ', phonemes)
+    phonemes = re.sub(r' z(?=[;:,.!?¡¿—…"«»“” ]|$)', 'z', phonemes)
     if lang == 'en-us':
-        ps = re.sub(r'(?<=nˈaɪn)ti(?!ː)', 'di', ps)
-    ps = ''.join(filter(lambda p: p in VOCAB, ps))
-    return ps.strip()
+        phonemes = re.sub(r'(?<=nˈaɪn)ti(?!ː)', 'di', phonemes)
+    phonemes = ''.join(filter(lambda p: p in VOCAB, phonemes))
+    return phonemes.strip()
