@@ -11,6 +11,8 @@ SUPPORTED_LANGUAGES = [
     'ko', # Korean
     'cmn', # Mandarin Chinese
 ]
+MAX_PHONEME_LENGTH = 510
+SAMPLE_RATE = 24000
 
 class KoKoroConfig:
     def __init__(self, model_path: str, voices_path: str):

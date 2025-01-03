@@ -1,5 +1,6 @@
 import re
 from piper_phonemize import phonemize_espeak
+from .config import MAX_PHONEME_LENGTH
 
 def split_num(num):
     num = num.group()
@@ -83,8 +84,8 @@ def get_vocab():
 
 VOCAB = get_vocab()
 def tokenize(phonemes):
-    if len(phonemes) > 510:
-        raise ValueError("text is too long, must be less than 510 phonemes")
+    if len(phonemes) > MAX_PHONEME_LENGTH:
+        raise ValueError(f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes")
     return [i for i in map(VOCAB.get, phonemes) if i is not None]
 
 def phonemize(text, lang = 'en-us', norm=True):

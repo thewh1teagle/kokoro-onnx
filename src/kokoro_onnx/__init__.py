@@ -1,4 +1,4 @@
-from .config import KoKoroConfig, SUPPORTED_LANGUAGES
+from .config import KoKoroConfig, SUPPORTED_LANGUAGES, MAX_PHONEME_LENGTH, SAMPLE_RATE
 from onnxruntime import InferenceSession
 import numpy as np
 from .tokenizer import tokenize, phonemize
@@ -20,14 +20,13 @@ class Kokoro:
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
         assert voice in self.voices, f"Voice {voice} not found in available voices"
         
-        # Max is 510 phonemes
         phonemes = phonemize(text, lang)
-        if len(phonemes) > 510:
+        if len(phonemes) > MAX_PHONEME_LENGTH:
             # TODO: Implement splitting of text into multiple parts
-            print("Warning: Text is too long, must be less than 510 phonemes")
-            phonemes = phonemes[:510]
+            print(f"Warning: Text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes")
+            phonemes = phonemes[:MAX_PHONEME_LENGTH]
         tokens = tokenize(phonemes)
-        assert len(tokens) <= 510, "Context length is 512, but leave room for the pad token 0 at the start & end"
+        assert len(tokens) <= MAX_PHONEME_LENGTH, f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
 
         
         style = get_voice_style(self.config, voice)[len(tokens)]
@@ -39,7 +38,7 @@ class Kokoro:
             speed=np.ones(1, dtype=np.float32) * speed
         ))[0]
         
-        return audio, 24000
+        return audio, SAMPLE_RATE
     
     def get_voices(self):
         return self.voices
