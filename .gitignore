@@ -12,6 +12,8 @@ wheels/
 .DS_Store
 *.wav
 *.json
+espeak-ng-data/
+*.tar.gz
 
 # Virtual environments
 .venv
