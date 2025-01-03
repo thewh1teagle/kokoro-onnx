@@ -37,3 +37,18 @@ class KoKoroConfig:
         with open(self.voices_path) as f:
             voices = json.load(f)
         return voices.keys()
+    
+    
+def get_vocab():
+    _pad = "$"
+    _punctuation = ';:,.!?¡¿—…"«»“” '
+    _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    _letters_ipa = "ɑɐɒæɓʙβɔɕçɗɖðʤəɘɚɛɜɝɞɟʄɡɠɢʛɦɧħɥʜɨɪʝɭɬɫɮʟɱɯɰŋɳɲɴøɵɸθœɶʘɹɺɾɻʀʁɽʂʃʈʧʉʊʋⱱʌɣɤʍχʎʏʑʐʒʔʡʕʢǀǁǂǃˈˌːˑʼʴʰʱʲʷˠˤ˞↓↑→↗↘'̩'ᵻ"
+    symbols = [_pad] + list(_punctuation) + list(_letters) + list(_letters_ipa)
+    dicts = {}
+    for i in range(len((symbols))):
+        dicts[symbols[i]] = i
+    breakpoint()
+    return dicts
+
+VOCAB = get_vocab()

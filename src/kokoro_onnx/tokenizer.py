@@ -1,6 +1,6 @@
 import re
 from piper_phonemize import phonemize_espeak
-from .config import MAX_PHONEME_LENGTH
+from .config import MAX_PHONEME_LENGTH, VOCAB
 
 def split_num(num):
     num = num.group()
@@ -71,18 +71,7 @@ def normalize_text(text):
     text = re.sub(r'(?i)(?<=[A-Z])\.(?=[A-Z])', '-', text)
     return text.strip()
 
-def get_vocab():
-    _pad = "$"
-    _punctuation = ';:,.!?¡¿—…"«»“” '
-    _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    _letters_ipa = "ɑɐɒæɓʙβɔɕçɗɖðʤəɘɚɛɜɝɞɟʄɡɠɢʛɦɧħɥʜɨɪʝɭɬɫɮʟɱɯɰŋɳɲɴøɵɸθœɶʘɹɺɾɻʀʁɽʂʃʈʧʉʊʋⱱʌɣɤʍχʎʏʑʐʒʔʡʕʢǀǁǂǃˈˌːˑʼʴʰʱʲʷˠˤ˞↓↑→↗↘'̩'ᵻ"
-    symbols = [_pad] + list(_punctuation) + list(_letters) + list(_letters_ipa)
-    dicts = {}
-    for i in range(len((symbols))):
-        dicts[symbols[i]] = i
-    return dicts
 
-VOCAB = get_vocab()
 def tokenize(phonemes):
     if len(phonemes) > MAX_PHONEME_LENGTH:
         raise ValueError(f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes")
@@ -96,8 +85,6 @@ def phonemize(text, lang = 'en-us', norm=True):
         text = normalize_text(text)
     phonemes = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang))
 
-    
-    
     # https://en.wiktionary.org/wiki/kokoro#English
     phonemes = phonemes.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')
     phonemes = phonemes.replace('ʲ', 'j').replace('r', 'ɹ').replace('x', 'k').replace('ɬ', 'l')
