@@ -13,6 +13,7 @@ dependencies = [
     "soundfile>=0.13.0",
     'piper-phonemize-fork>=1.2.0 ; platform_system != "Linux"',
     'piper-phonemize-cross>=1.2.1 ; platform_system == "Linux"',
+    "sounddevice>=0.5.1",
 ]
 
 [project.urls]
