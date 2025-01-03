@@ -2,6 +2,12 @@
 
 TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgrad/Kokoro-TTS)
 
+## Features
+
+- Support `English`, `French`, `Japanse`, `Korean`, and `Chinese`
+- 4X Faster than realtime
+- Support multiple voices including whispering
+
 ## Setup
 
 ```console
