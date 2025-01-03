@@ -15,3 +15,7 @@ You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/
 ## Examples
 
 See [examples](examples)
+
+## Voices
+
+Available voices are `af`, `af_bella`, `af_nicole`, `af_sarah`, `af_sky`, `am_adam`, `am_michael`, `bf_emma`, `bf_isabella`, `bm_george`, `bm_lewis`
