@@ -2,6 +2,7 @@ import re
 from piper_phonemize import phonemize_espeak
 from .config import MAX_PHONEME_LENGTH, VOCAB
 import os
+from .log import log
 
 def split_num(num):
     num = num.group()
@@ -87,7 +88,8 @@ def phonemize(text, lang = 'en-us', norm=True):
     
     # Provide option to use custom espeak data path
     data_path = os.getenv('ESPEAK_DATA_PATH')
-    phonemes = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang, data_path=data_path))
+    phonemes = '. '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang, data_path=data_path))
+    log.debug(phonemes)
 
     # https://en.wiktionary.org/wiki/kokoro#English
     phonemes = phonemes.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')
