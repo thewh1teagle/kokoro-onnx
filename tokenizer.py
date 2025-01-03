@@ -95,8 +95,9 @@ def phonemize(text, lang = 'en-us', norm=True):
     """
     if norm:
         text = normalize_text(text)
-    
-    ps = ''.join(phonemize_espeak(text, lang)[0])
+
+    ps = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang))
+
     
     
     # https://en.wiktionary.org/wiki/kokoro#English
