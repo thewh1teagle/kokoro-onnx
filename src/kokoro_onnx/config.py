@@ -2,6 +2,16 @@ from pathlib import Path
 import json
 from functools import lru_cache
 
+# https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
+SUPPORTED_LANGUAGES = [
+    'en-us', # English
+    'en-gb', # English (British)
+    'fr', # French
+    'ja', # Japanese
+    'ko', # Korean
+    'cmn', # Mandarin Chinese
+]
+
 class KoKoroConfig:
     def __init__(self, model_path: str, voices_path: str):
         self.model_path = model_path

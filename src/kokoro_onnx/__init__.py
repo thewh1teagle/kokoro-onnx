@@ -1,4 +1,4 @@
-from .config import KoKoroConfig
+from .config import KoKoroConfig, SUPPORTED_LANGUAGES
 from onnxruntime import InferenceSession
 import numpy as np
 from .tokenizer import tokenize, phonemize
@@ -16,7 +16,7 @@ class Kokoro:
         Create audio from text using the specified voice and speed.
         """
         
-        assert lang in ['en-us', 'en-gb'], "Language must be either 'en-us' or 'en-gb'"
+        assert lang in SUPPORTED_LANGUAGES, f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
         assert voice in self.voices, f"Voice {voice} not found in available voices"
         
@@ -43,3 +43,6 @@ class Kokoro:
     
     def get_voices(self):
         return self.voices
+
+    def get_languages(self):
+        return SUPPORTED_LANGUAGES
