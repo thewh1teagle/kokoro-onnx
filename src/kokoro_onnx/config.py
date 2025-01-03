@@ -48,7 +48,6 @@ def get_vocab():
     dicts = {}
     for i in range(len((symbols))):
         dicts[symbols[i]] = i
-    breakpoint()
     return dicts
 
 VOCAB = get_vocab()
