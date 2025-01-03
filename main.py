@@ -28,7 +28,7 @@ sess = InferenceSession('kokoro-v0_19.onnx')
 audio = sess.run(None, dict(
     tokens=tokens, 
     style=ref_s,
-    speed=np.ones(1, dtype=np.float32)
+    speed=np.ones(1, dtype=np.float32) # 0.5 to 2
 ))[0]
 
 
