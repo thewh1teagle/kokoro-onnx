@@ -19,7 +19,6 @@ assert len(tokens) <= 510, len(tokens)
 
 # Style vector based on len(tokens), ref_s has shape (1, 256)
 ref_s = torch.load('af.pt')[len(tokens)].numpy()
-breakpoint()
 # Add the pad ids, and reshape tokens, should now have shape (1, <=512)
 tokens = [[0, *tokens, 0]]
 
