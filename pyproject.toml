@@ -3,6 +3,9 @@ name = "kokoro-onnx"
 version = "0.1.0"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
+authors = [
+    { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" }
+]
 requires-python = ">=3.12"
 dependencies = [
     "onnxruntime>=1.20.1",
@@ -11,3 +14,7 @@ dependencies = [
     'piper-phonemize-fork>=1.2.0 ; platform_system != "Linux"',
     'piper-phonemize-cross>=1.2.1 ; platform_system == "Linux"',
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
