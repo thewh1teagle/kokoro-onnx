@@ -1,6 +1,6 @@
 # kokoro-onnx
 
-TTS with kokoro and onnx runtime
+TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgrad/Kokoro-TTS)
 
 ## Setup
 
