@@ -15,6 +15,11 @@ dependencies = [
     'piper-phonemize-cross>=1.2.1 ; platform_system == "Linux"',
 ]
 
+[project.urls]
+Homepage = "https://github.com/thewh1teagle/kokoro-onnx"
+Repository = "https://github.com/thewh1teagle/kokoro-onnx"
+Issues = "https://github.com/thewh1teagle/kokoro-onnx/issues"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
