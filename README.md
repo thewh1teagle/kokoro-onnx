@@ -5,7 +5,7 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 ## Features
 
 - Support `English`, `French`, `Japanse`, `Korean`, and `Chinese`
-- 4X Faster than realtime
+- 4X Faster than realtime (macOS M1)
 - Support multiple voices including whispering
 
 ## Setup
