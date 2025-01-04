@@ -46,14 +46,23 @@ def point_num(num):
     return ' point '.join([a, ' '.join(b)])
 
 def normalize_text(text):
+    # remove leading and trailing whitespace and empty lines
+    text = '\n'.join(line.strip() for line in text.splitlines() if line.strip())
+    # replace curly quotes with straight quotes
     text = text.replace(chr(8216), "'").replace(chr(8217), "'")
+    # replace curly double quotes with straight double quotes
     text = text.replace('«', chr(8220)).replace('»', chr(8221))
+    # replace other curly quotes with straight double quotes
     text = text.replace(chr(8220), '"').replace(chr(8221), '"')
+    # replace other curly quotes with straight double quotes
     text = text.replace('(', '«').replace(')', '»')
     for a, b in zip('、。！，：；？', ',.!,:;?'):
         text = text.replace(a, b+' ')
+    # replace ellipsis with three periods
     text = re.sub(r'[^\S \n]', ' ', text)
+    # replace multiple spaces with a single space
     text = re.sub(r'  +', ' ', text)
+    # replace multiple newlines with a single newline
     text = re.sub(r'(?<=\n) +(?=\n)', '', text)
     text = re.sub(r'\bD[Rr]\.(?= [A-Z])', 'Doctor', text)
     text = re.sub(r'\b(?:Mr\.|MR\.(?= [A-Z]))', 'Mister', text)
@@ -89,7 +98,6 @@ def phonemize(text, lang = 'en-us', norm=True):
     # Provide option to use custom espeak data path
     data_path = os.getenv('ESPEAK_DATA_PATH')
     phonemes = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang, data_path=data_path))
-    log.debug(phonemes)
 
     # https://en.wiktionary.org/wiki/kokoro#English
     phonemes = phonemes.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')

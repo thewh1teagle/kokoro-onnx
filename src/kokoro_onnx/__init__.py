@@ -5,6 +5,7 @@ from .tokenizer import tokenize, phonemize
 from .voices import get_voice_style
 from .log import log
 import time
+import re
 
 class Kokoro:
     def __init__(self, model_path: str, voices_path: str):
@@ -32,6 +33,38 @@ class Kokoro:
         log.debug(f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s (More than {speedup_factor:.2f}x real-time)")
         return audio, SAMPLE_RATE
     
+    
+    def _split_phonemes(self, phonemes: str):
+        """
+        Split phonemes into batches of MAX_PHONEME_LENGTH
+        Prefer splitting at punctuation marks.
+        """
+        # Regular expression to split by punctuation and keep them
+        words = re.split(r'([.,!?;])', phonemes)
+        
+        batched_phoenemes = []
+        current_batch = ""
+
+        for part in words:
+            # Remove leading/trailing whitespace
+            part = part.strip()
+
+            if part:
+                # If adding the part exceeds the max length, split into a new batch
+                if len(current_batch) + len(part) + 1 > MAX_PHONEME_LENGTH:
+                    batched_phoenemes.append(current_batch.strip())
+                    current_batch = part
+                else:
+                    if current_batch:
+                        current_batch += " "
+                    current_batch += part
+
+        # Append the last batch if it contains any phonemes
+        if current_batch:
+            batched_phoenemes.append(current_batch.strip())
+
+        return batched_phoenemes
+        
     def create(self, text: str, voice: str, speed: float=1.0, lang = 'en-us'):
         """
         Create audio from text using the specified voice and speed.
@@ -45,18 +78,17 @@ class Kokoro:
         start_t = time.time()
         phonemes = phonemize(text, lang)
         # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
-        batched_phoenemes = []
-        for i in range(0, len(phonemes), MAX_PHONEME_LENGTH):
-            batched_phoenemes.append(phonemes[i:i+MAX_PHONEME_LENGTH])
+        batched_phoenemes = self._split_phonemes(phonemes)
         
         audio = []
-        silence = np.zeros(int(SAMPLE_RATE * 0.1), dtype=np.float32) # 0.1s silence
-        log.debug(f'Phonemes: {phonemes}')
         log.debug(f"Creating audio for {len(batched_phoenemes)} batches for {len(phonemes)} phonemes")
         for phonemes in batched_phoenemes:
+            log.debug(f"Phonemes: {phonemes}")
+            if len(phonemes) > MAX_PHONEME_LENGTH:
+                log.warning(f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes")
+                phonemes = phonemes[:MAX_PHONEME_LENGTH]
             audio_part, _ = self._create_audio(phonemes, voice, speed)
             audio.append(audio_part)
-            audio.append(silence)
         audio = np.concatenate(audio)
         log.debug(f"Created audio in {time.time() - start_t:.2f}s")
         return audio, SAMPLE_RATE
