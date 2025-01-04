@@ -41,7 +41,6 @@ class Kokoro:
         """
         # Regular expression to split by punctuation and keep them
         words = re.split(r'([.,!?;])', phonemes)
-        
         batched_phoenemes = []
         current_batch = ""
 
@@ -55,9 +54,12 @@ class Kokoro:
                     batched_phoenemes.append(current_batch.strip())
                     current_batch = part
                 else:
-                    if current_batch:
-                        current_batch += " "
-                    current_batch += part
+                    if part in ".,!?;":
+                        current_batch += part
+                    else:
+                        if current_batch:
+                            current_batch += " "
+                        current_batch += part
 
         # Append the last batch if it contains any phonemes
         if current_batch:
