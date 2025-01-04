@@ -1,5 +1,5 @@
 """
-pip install kokoro-onnx soundfile
+pip install kokoro-onnx sounddevice
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json

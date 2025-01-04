@@ -6,10 +6,12 @@ import logging
 import os
 import colorlog
 
-
 def _create_logger():
-    # Set default logging level to WARNING if LOG_LEVEL is not set
-    # KOKORO_LOG_LEVEL=DEBUG
+    """
+    Create a logger with colorized output
+    Usage: LOG_LEVEL=DEBUG python <script.py>
+    """
+    
     handler = colorlog.StreamHandler()
     fmt = "%(log_color)s%(levelname)-8s%(reset)s [%(filename)s:%(lineno)d] %(message)s"
     handler.setFormatter(
@@ -24,7 +26,8 @@ def _create_logger():
             },
         )
     )
-    log_level = os.getenv("KOKORO_LOG_LEVEL", "WARNING").upper()
+    # Get log level from LOG_LEVEL environment variable
+    log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
     logger = colorlog.getLogger(__package__)
     logger.setLevel(level=getattr(logging, log_level, logging.WARNING))
     # Setup logging to stdout
