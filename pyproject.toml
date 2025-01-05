@@ -10,8 +10,8 @@ requires-python = ">=3.9"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
-    "espeakng-loader==0.1.2",
-    "phonemizer-fork==3.3.1", # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged and change dependency from git to stable!
+    "espeakng-loader==0.1.51.0",
+    "phonemizer-fork==3.3.1",    # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged and change dependency from git to stable!
 ]
 
 [project.urls]

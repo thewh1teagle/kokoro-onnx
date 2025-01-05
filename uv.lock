@@ -256,15 +256,11 @@ wheels = [
 
 [[package]]
 name = "espeakng-loader"
-version = "0.1.2"
+version = "0.1.51.0"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/f8/5ab26ea2867c58b9f063b5429322cc90c4343347d8726e8fc62ef8e08e0a/espeakng_loader-0.1.51.0.tar.gz", hash = "sha256:2f6a259f2f1cb7a1b2299d83a1f4d575e146d1720f0a4cb31727bc74cc7178c4", size = 18534249 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/61/b5bf7b7d418d7f9ecf2dafb5af1e83a2429d058f98c3dde0b2bd7fcd28c8/espeakng_loader-0.1.2-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:55fd18e00b164cbfd3f6614374447d970766cdb8fa4dc62596e655f93018b8d0", size = 10039794 },
-    { url = "https://files.pythonhosted.org/packages/8d/d3/8255d49a9302bd72d90b436579fef7e1b42434f323137af353858fad8d6a/espeakng_loader-0.1.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:84832601c2f49cdd939e1c23d0aef383b04b0d67fb391064fa464dfd4444a795", size = 9893306 },
-    { url = "https://files.pythonhosted.org/packages/4b/f1/d5909f58d49f1f4b2e4fb989ebd1a43bcf7750194cf119ce92bed296c2b7/espeakng_loader-0.1.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:958b54b6b1a9d0634214cb506f8bbcde09f4e73bdd09d25f78aa4994c0b8d309", size = 10039804 },
-    { url = "https://files.pythonhosted.org/packages/56/ee/d5ec9ac5b433fbd3692b3acab56a9c6903f338a9bbbcf67f18e8b214dfa6/espeakng_loader-0.1.2-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:f62b9aac4a58fc230e8c288372fc58e55aca5cb0a0b7ac1326bec80f5e89f296", size = 10036390 },
-    { url = "https://files.pythonhosted.org/packages/b6/38/8d5398f75d15b93d6bf58c53c24bff5ccb38b21d0dd5749af0150e5e2957/espeakng_loader-0.1.2-py3-none-win_amd64.whl", hash = "sha256:ed412650d0f71d9a024ecfc3fc901881e927cd56c2662b9752e6d8a8c7393be6", size = 9437926 },
-    { url = "https://files.pythonhosted.org/packages/e0/ca/4bde49c325d83bcda3a7aac0728ba671ebef1c988aa604e89e481e750918/espeakng_loader-0.1.2-py3-none-win_arm64.whl", hash = "sha256:aaf8ea053ecc0edd15d684a64a4fe765ccbf08fb2a12bdcfd5ffedcdfa858387", size = 9427406 },
+    { url = "https://files.pythonhosted.org/packages/d9/a8/c87be5694c82e876a6c969d8237de6634e917630d474518fafb6e0052199/espeakng_loader-0.1.51.0-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:06ac55bcdf6549f5681bae516b1717aae04ae4dfb5677287e9edcce982000f14", size = 9708953 },
 ]
 
 [[package]]
@@ -375,7 +371,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "colorlog", specifier = ">=6.9.0" },
-    { name = "espeakng-loader", specifier = "==0.1.2" },
+    { name = "espeakng-loader", specifier = "==0.1.51.0" },
     { name = "onnxruntime", specifier = ">=1.20.1" },
     { name = "phonemizer-fork", specifier = "==3.3.1" },
 ]
