@@ -1,4 +1,6 @@
 """
+Note: on Linux you need to run this as well: apt-get install portaudio19-dev
+
 pip install kokoro-onnx sounddevice
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
