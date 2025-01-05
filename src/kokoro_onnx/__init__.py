@@ -88,7 +88,14 @@ class Kokoro:
 
         return batched_phoenemes
 
-    def create(self, text: str, voice: str, speed: float = 1.0, lang="en-us"):
+    def create(
+        self,
+        text: str,
+        voice: str,
+        speed: float = 1.0,
+        lang="en-us",
+        phonemes: str = None,
+    ):
         """
         Create audio from text using the specified voice and speed.
         """
@@ -100,7 +107,8 @@ class Kokoro:
         assert voice in self.voices, f"Voice {voice} not found in available voices"
 
         start_t = time.time()
-        phonemes = phonemize(text, lang)
+        if not phonemes:
+            phonemes = phonemize(text, lang)
         # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
         batched_phoenemes = self._split_phonemes(phonemes)
 
