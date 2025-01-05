@@ -60,3 +60,7 @@ See [examples](examples)
 Available voices are `af`, `af_bella`, `af_nicole`, `af_sarah`, `af_sky`, `am_adam`, `am_michael`, `bf_emma`, `bf_isabella`, `bm_george`, `bm_lewis`
 
 <video src="https://github.com/user-attachments/assets/a89b4c75-303d-47ac-96c8-7edb64b9150a" width=400></video>
+
+## Contribute
+
+See [CONTRIBUTE.md](CONTRIBUTE.md)
