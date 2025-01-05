@@ -14,7 +14,7 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 pip install -U kokoro-onnx
 ```
 
-- You also need to place the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json) in the project folder. 
+- You also need to place the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json) in the project folder.
 - We recommend use [uv](https://docs.astral.sh/uv/getting-started/installation) for Python.
 - Python 3.12 is recommended. (`uv init -p 3.12`)
 - Please see examples.
@@ -22,8 +22,6 @@ pip install -U kokoro-onnx
 <details>
 
 <summary>Instructions</summary>
-
-
 
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation) for isolated Python (Recommend).
 
@@ -38,6 +36,7 @@ _Note: you don't have to use `uv`. but it just make things much simpler. You can
 uv init -p 3.12
 uv add kokoro-onnx soundfile
 ```
+
 4. Paste the contents of [`examples/save.py`](https://github.com/thewh1teagle/kokoro-onnx/blob/main/examples/save.py) in `hello.py`
 5. Downloads the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices) and place them in the same directory.
 6. Run
@@ -48,8 +47,7 @@ uv run hello.py
 
 You can edit the text in `hello.py`
 
-That's it! `audio.wav` should be created. 
-
+That's it! `audio.wav` should be created.
 
 </details>
 

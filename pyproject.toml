@@ -4,7 +4,7 @@ version = "0.1.9"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
-    { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" }
+    { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
 requires-python = ">=3.9"
 dependencies = [
@@ -24,8 +24,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "ruff>=0.8.6",
-    "sounddevice>=0.5.1",
-    "soundfile>=0.13.0",
-]
+dev = ["ruff>=0.8.6", "sounddevice>=0.5.1", "soundfile>=0.13.0"]

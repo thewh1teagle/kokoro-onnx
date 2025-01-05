@@ -12,6 +12,7 @@ wheels/
 .DS_Store
 *.wav
 *.json
+!.vscode/*.json
 espeak-ng-data/
 *.tar.gz
 

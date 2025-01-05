@@ -6,12 +6,13 @@ import logging
 import os
 import colorlog
 
+
 def _create_logger():
     """
     Create a logger with colorized output
     Usage: LOG_LEVEL=DEBUG python <script.py>
     """
-    
+
     handler = colorlog.StreamHandler()
     fmt = "%(log_color)s%(levelname)-8s%(reset)s [%(filename)s:%(lineno)d] %(message)s"
     handler.setFormatter(
@@ -33,5 +34,6 @@ def _create_logger():
     # Setup logging to stdout
     logger.addHandler(handler)
     return logger
-    
+
+
 log = _create_logger()
