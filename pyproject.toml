@@ -6,12 +6,12 @@ readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" }
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
-    "phonemizer",
     "espeakng-loader==0.1.2",
+    "phonemizer-fork==3.3.1b0",
 ]
 
 [project.urls]
@@ -31,5 +31,3 @@ dev = [
 ]
 
 # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged and change dependency from git to stable!
-[tool.uv.sources]
-phonemizer = { git = "https://github.com/thewh1teagle/phonemizer.git", rev = "feat/custom-espeak-data" }
