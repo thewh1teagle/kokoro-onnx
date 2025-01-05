@@ -1,6 +1,6 @@
 [project]
 name = "kokoro-onnx"
-version = "0.1.5"
+version = "0.1.6"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
-    "phonemizer",
+    "phonemizer @ git+https://github.com/thewh1teagle/phonemizer.git@feat/custom-espeak-data",
     "espeakng-loader==0.1.2",
 ]
 
@@ -30,6 +30,6 @@ dev = [
     "soundfile>=0.13.0",
 ]
 
-[tool.uv.sources]
-phonemizer = { git = "https://github.com/thewh1teagle/phonemizer.git", rev = "feat/custom-espeak-data" }
-
+# TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged and change dependency from git to stable!
+[tool.hatch.metadata]
+allow-direct-references = true
