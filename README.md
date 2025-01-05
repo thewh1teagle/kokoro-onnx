@@ -14,9 +14,10 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 pip install -U kokoro-onnx
 ```
 
-We recommend use [uv](https://docs.astral.sh/uv/getting-started/installation).
-
-You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json). Please see examples.
+- You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json). 
+- We recommend use [uv](https://docs.astral.sh/uv/getting-started/installation) for Python.
+- Python 3.12 is recommended. (`uv init -p 3.12`)
+- Please see examples.
 
 ## Examples
 
