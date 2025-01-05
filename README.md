@@ -12,7 +12,6 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 
 ```console
 pip install -U kokoro-onnx
-pip install git+https://github.com/thewh1teagle/phonemizer.git@feat/custom-espeak-data # Until https://github.com/bootphon/phonemizer/pull/191 merged
 ```
 
 We recommend use [uv](https://docs.astral.sh/uv/getting-started/installation).
