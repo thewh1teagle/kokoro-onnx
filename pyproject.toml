@@ -9,9 +9,9 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "onnxruntime>=1.20.1",
-    'piper-phonemize-fork>=1.2.0 ; platform_system != "Linux"',
-    'piper-phonemize-cross>=1.2.1 ; platform_system == "Linux"',
     "colorlog>=6.9.0",
+    "phonemizer",
+    "espeakng-loader==0.1.2",
 ]
 
 [project.urls]
@@ -29,4 +29,7 @@ dev = [
     "sounddevice>=0.5.1",
     "soundfile>=0.13.0",
 ]
+
+[tool.uv.sources]
+phonemizer = { git = "https://github.com/thewh1teagle/phonemizer.git", rev = "feat/custom-espeak-data" }
 

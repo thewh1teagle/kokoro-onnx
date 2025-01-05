@@ -1,8 +1,11 @@
 import re
-from piper_phonemize import phonemize_espeak
 from .config import MAX_PHONEME_LENGTH, VOCAB
-import os
-from .log import log
+from phonemizer.backend.espeak.wrapper import EspeakWrapper
+import phonemizer
+import espeakng_loader
+
+EspeakWrapper.set_library(espeakng_loader.get_library_path())
+EspeakWrapper.set_data_path(espeakng_loader.get_data_path())
 
 def split_num(num):
     num = num.group()
@@ -93,11 +96,9 @@ def phonemize(text, lang = 'en-us', norm=True):
     lang can be 'en-us' or 'en-gb'
     """
     if norm:
-        text = normalize_text(text)
+        text = normalize_text(text)   
     
-    # Provide option to use custom espeak data path
-    data_path = os.getenv('ESPEAK_DATA_PATH')
-    phonemes = ' '.join(''.join(sentence) for sentence in phonemize_espeak(text, lang, data_path=data_path))
+    phonemes = phonemizer.phonemize(text, lang, preserve_punctuation=True, with_stress=True)
 
     # https://en.wiktionary.org/wiki/kokoro#English
     phonemes = phonemes.replace('kəkˈoːɹoʊ', 'kˈoʊkəɹoʊ').replace('kəkˈɔːɹəʊ', 'kˈəʊkəɹəʊ')
