@@ -11,8 +11,8 @@ from kokoro_onnx import Kokoro
 
 sentences = {
     'en-us': 'Hello, World!',
-    # 'en-gb': 'Hello, World!',
-    'fr': 'Bonjour, Monde!',
+    'en-gb': 'Hello, World!',
+    'fr-fr': 'Bonjour, Monde!',
     'ja': 'こんにちは、世界！',
     'ko': '안녕하세요, 세계!',
     'cmn': '你好，世界！',  # Mandarin Chinese

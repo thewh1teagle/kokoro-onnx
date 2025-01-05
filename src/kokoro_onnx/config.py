@@ -6,7 +6,7 @@ from functools import lru_cache
 SUPPORTED_LANGUAGES = [
     'en-us', # English
     'en-gb', # English (British)
-    'fr', # French
+    'fr-fr', # French
     'ja', # Japanese
     'ko', # Korean
     'cmn', # Mandarin Chinese
