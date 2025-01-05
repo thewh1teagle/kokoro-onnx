@@ -1,7 +1,7 @@
 from .config import KoKoroConfig, SUPPORTED_LANGUAGES, MAX_PHONEME_LENGTH, SAMPLE_RATE
 from onnxruntime import InferenceSession
 import numpy as np
-from .tokenizer import tokenize, phonemize
+from .tokenizer import Tokenizer
 from .log import log
 import time
 import re
@@ -10,24 +10,35 @@ from functools import lru_cache
 
 
 class Kokoro:
-    def __init__(self, model_path: str, voices_path: str):
-        self.config = KoKoroConfig(model_path, voices_path)
+    def __init__(
+        self, model_path: str, voices_path: str, espeak_ng_data_path: str = None
+    ):
+        self.config = KoKoroConfig(model_path, voices_path, espeak_ng_data_path)
         self.config.validate()
         self.sess = InferenceSession(model_path)
         self.voices: list[str] = self.config.get_voice_names()
+        self.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
 
     @classmethod
-    def from_session(cls, session: InferenceSession, voices_path: str):
+    def from_session(
+        cls,
+        session: InferenceSession,
+        voices_path: str,
+        espeak_ng_data_path: str = None,
+    ):
         instance = cls.__new__(cls)
         instance.sess = session
-        instance.config = KoKoroConfig(session._model_path, voices_path)
+        instance.config = KoKoroConfig(
+            session._model_path, voices_path, espeak_ng_data_path
+        )
         instance.config.validate()
         instance.voices = instance.config.get_voice_names()
+        instance.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
         return instance
 
     def _create_audio(self, phonemes: str, voice: str, speed: float):
         start_t = time.time()
-        tokens = tokenize(phonemes)
+        tokens = self.tokenizer.tokenize(phonemes)
         assert (
             len(tokens) <= MAX_PHONEME_LENGTH
         ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
@@ -108,7 +119,7 @@ class Kokoro:
 
         start_t = time.time()
         if not phonemes:
-            phonemes = phonemize(text, lang)
+            phonemes = self.tokenizer.phonemize(text, lang)
         # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
         batched_phoenemes = self._split_phonemes(phonemes)
 

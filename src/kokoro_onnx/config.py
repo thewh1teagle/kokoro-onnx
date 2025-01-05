@@ -16,9 +16,10 @@ SAMPLE_RATE = 24000
 
 
 class KoKoroConfig:
-    def __init__(self, model_path: str, voices_path: str):
+    def __init__(self, model_path: str, voices_path: str, espeak_ng_data_path):
         self.model_path = model_path
         self.voices_path = voices_path
+        self.espeak_ng_data_path = espeak_ng_data_path
 
     def validate(self):
         if not Path(self.voices_path).exists():
