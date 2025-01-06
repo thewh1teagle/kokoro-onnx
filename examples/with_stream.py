@@ -29,19 +29,19 @@ There is a special alert for Kansas, urging people not to leave their homes: "Th
 async def main():
     kokoro = Kokoro("kokoro-v0_19.onnx", "voices.json")
 
-    chunk_count = 0
-    async for samples, sample_rate in kokoro.create_stream(
+    stream = kokoro.create_stream(
         text,
         voice="af_nicole",
         speed=1.0,
         lang="en-us",
-    ):
-        print(f"Playing audio stream ({chunk_count})...")
+    )
 
+    count = 0
+    async for samples, sample_rate in stream:
+        count += 1
+        print(f"Playing audio stream ({count})...")
         sd.play(samples, sample_rate)
         sd.wait()
-
-        chunk_count += 1
 
 
 asyncio.run(main())
