@@ -66,7 +66,7 @@ class Kokoro:
         create_duration = time.time() - start_t
         speedup_factor = audio_duration / create_duration
         log.debug(
-            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s (More than {speedup_factor:.2f}x real-time)"
+            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s ({speedup_factor:.2f}x real-time)"
         )
         return audio, SAMPLE_RATE
 
