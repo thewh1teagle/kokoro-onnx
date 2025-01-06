@@ -10,6 +10,7 @@ from onnxruntime import InferenceSession
 from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, SUPPORTED_LANGUAGES, KoKoroConfig
 from .log import log
 from .tokenizer import Tokenizer
+import librosa
 
 
 class Kokoro:
@@ -115,6 +116,7 @@ class Kokoro:
         speed: float = 1.0,
         lang="en-us",
         phonemes: str = None,
+        trim=True,
     ):
         """
         Create audio from text using the specified voice and speed.
@@ -138,6 +140,9 @@ class Kokoro:
         )
         for phonemes in batched_phoenemes:
             audio_part, _ = self._create_audio(phonemes, voice, speed)
+            if trim:
+                # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                audio_part, _ = librosa.effects.trim(audio_part)
             audio.append(audio_part)
         audio = np.concatenate(audio)
         log.debug(f"Created audio in {time.time() - start_t:.2f}s")
@@ -150,6 +155,7 @@ class Kokoro:
         speed: float = 1.0,
         lang="en-us",
         phonemes: str = None,
+        trim=True,
     ):
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
@@ -174,6 +180,9 @@ class Kokoro:
                 audio_part, sample_rate = await loop.run_in_executor(
                     None, self._create_audio, phonemes, voice, speed
                 )
+                if trim:
+                    # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                    audio_part, _ = librosa.effects.trim(audio_part)
                 log.debug(f"Processed chunk {i} of stream")
                 await queue.put((audio_part, sample_rate))
             await queue.put(None)  # Signal the end of the stream

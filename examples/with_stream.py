@@ -37,9 +37,6 @@ async def main():
         lang="en-us",
     ):
         print(f"Playing audio stream ({chunk_count})...")
-        # Trim leading silence for a more natural sound.
-        if chunk_count > 0:
-            samples = samples[int(sample_rate * 0.5) :]  # 0.5s
 
         sd.play(samples, sample_rate)
         sd.wait()

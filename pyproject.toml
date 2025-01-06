@@ -12,7 +12,7 @@ dependencies = [
     "colorlog>=6.9.0",
     "espeakng-loader>=0.2.1",
     "phonemizer-fork==3.3.1", # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged
-
+    "librosa>=0.10.2.post1",
 ]
 
 [project.urls]
