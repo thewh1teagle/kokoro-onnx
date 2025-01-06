@@ -10,9 +10,30 @@ from functools import lru_cache
 
 
 class Kokoro:
+    """
+    Kokoro TTS engine supporting multiple languages and voices.
+
+    Supported languages:
+    - English (en-us, en-gb)
+    - French (fr-fr)
+    - Japanese (ja-jp)
+    - Korean (ko-kr)
+    - Chinese (zh-cn)
+
+    Note: For CJK languages (Chinese, Japanese, Korean), English letters are not yet
+    properly handled by the tokenizers. Convert or remove English text for best results.
+    """
     def __init__(
         self, model_path: str, voices_path: str, espeak_ng_data_path: str = None
     ):
+        """
+        Initialize Kokoro TTS engine.
+
+        Args:
+            model_path: Path to the ONNX model file
+            voices_path: Path to the voices.json file
+            espeak_ng_data_path: Optional path to espeak-ng data directory
+        """
         self.config = KoKoroConfig(model_path, voices_path, espeak_ng_data_path)
         self.config.validate()
         self.sess = InferenceSession(model_path)
@@ -108,7 +129,27 @@ class Kokoro:
         phonemes: str = None,
     ):
         """
-        Create audio from text using the specified voice and speed.
+        Create audio from text using the specified voice, language and speed.
+
+        Args:
+            text: The text to synthesize
+            voice: The voice to use (see get_voices() for available options)
+            speed: Speech speed multiplier (0.5 to 2.0)
+            lang: Language code for the input text. Supported codes:
+                - English: "en-us", "en-gb"
+                - French: "fr-fr"
+                - Japanese: "ja-jp"
+                - Korean: "ko-kr"
+                - Chinese: "zh-cn"
+            phonemes: Optional phoneme sequence to use instead of text
+
+        Note:
+            For CJK languages (Chinese, Japanese, Korean), English letters in the text
+            are not yet properly handled by the tokenizers. Convert or remove English
+            text for best results.
+
+        Returns:
+            Tuple of (audio_samples: np.ndarray, sample_rate: int)
         """
 
         assert (
