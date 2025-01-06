@@ -11,7 +11,6 @@ from kokoro_onnx import Kokoro
 from onnxruntime import InferenceSession
 import onnxruntime
 
-# See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
 providers = onnxruntime.get_available_providers()
 print(f"Available onnx runtime providers: {providers}")
 
