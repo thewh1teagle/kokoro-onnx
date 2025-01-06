@@ -31,8 +31,8 @@ for voice in voices:
     print(f"Downloading {url}")
     r = requests.get(url)
     content = io.BytesIO(r.content)
-    ref_s: np.ndarray = torch.load(content).numpy()
-    voices_json[voice] = ref_s.tolist()
+    voice_data: np.ndarray = torch.load(content).numpy()
+    voices_json[voice] = voice_data.tolist()
 
 with open("voices.json", "w") as f:
     json.dump(voices_json, f, indent=4)
