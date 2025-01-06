@@ -2,14 +2,15 @@ from pathlib import Path
 import json
 from functools import lru_cache
 
-# https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
+# Language codes based on Kokoro-TTS v0.23
+# See: https://huggingface.co/spaces/hexgrad/Kokoro-TTS
 SUPPORTED_LANGUAGES = [
-    "en-us",  # English
+    "en-us",  # English (US)
     "en-gb",  # English (British)
     "fr-fr",  # French
-    "ja",  # Japanese
-    "ko",  # Korean
-    "cmn",  # Mandarin Chinese
+    "ja-jp",  # Japanese
+    "ko-kr",  # Korean
+    "zh-cn",  # Chinese (Simplified)
 ]
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
