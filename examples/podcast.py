@@ -12,15 +12,15 @@ import numpy as np
 import random
 
 # fmt: off
-sentences_json = [
-    { "voice": "af_sarah", "text": "Hello and welcome to the podcast! We’ve got some exciting things lined up today." },  
-    { "voice": "am_michael", "text": "It’s going to be an exciting episode. Stick with us!" },  
-    { "voice": "af_sarah", "text": "But first, we’ve got a special guest with us. Please welcome Nicole!" },  
-    { "voice": "af_sarah", "text": "Now, we’ve been told Nicole has a very unique way of speaking today... a bit of a mysterious vibe, if you will." },  
+sentences = [
+    { "voice": "af_sarah", "text": "Hello and welcome to the podcast! We’ve got some exciting things lined up today." }, # Sarah
+    { "voice": "am_michael", "text": "It’s going to be an exciting episode. Stick with us!" }, # Michael
+    { "voice": "af_sarah", "text": "But first, we’ve got a special guest with us. Please welcome Nicole!" },   # Sarah
+    { "voice": "af_sarah", "text": "Now, we’ve been told Nicole has a very unique way of speaking today... a bit of a mysterious vibe, if you will." }, # Sarah
     { "voice": "af_nicole", "text": "Hey there... I’m so excited to be a guest today... But I thought I’d keep it quiet... for now..." },  # Nicole whispers
-    { "voice": "am_michael", "text": "Well, it certainly adds some intrigue! Let’s dive in and see what that’s all about." },  
-    { "voice": "af_sarah", "text": "Today, we’re covering something that’s close to our hearts. Ready for it?" },  
-    { "voice": "am_michael", "text": "It’s going to be a good one!" }  
+    { "voice": "am_michael", "text": "Well, it certainly adds some intrigue! Let’s dive in and see what that’s all about." }, # Sarah
+    { "voice": "af_sarah", "text": "Today, we’re covering something that’s close to our hearts" }, # Sarah
+    { "voice": "am_michael", "text": "It’s going to be a good one!" }   # Michael
 ]
 
 def random_pause(min_duration=0.5, max_duration=2.0):
@@ -33,11 +33,10 @@ kokoro = Kokoro("kokoro-v0_19.onnx", "voices.json")
 
 audio = []
 
-# Loop through sentences_json and process each entry
-for sentence in sentences_json:
+for sentence in sentences:
     voice = sentence["voice"]
     text = sentence["text"]
-    print(f"Creating audio for: {text} with voice: {voice}")
+    print(f"Creating audio with {voice}: {text}")
     
     samples, sample_rate = kokoro.create(
         text,
