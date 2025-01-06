@@ -15,6 +15,9 @@ wheels/
 !.vscode/*.json
 espeak-ng-data/
 *.tar.gz
+*.dylib
+*.so
+*.dll
 
 # Virtual environments
 .venv
