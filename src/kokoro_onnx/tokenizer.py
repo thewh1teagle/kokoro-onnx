@@ -16,6 +16,7 @@ class Tokenizer:
 
     @staticmethod
     def split_num(num):
+        # https://github.com/espeak-ng/espeak-ng/issues/484
         num = num.group()
         if "." in num:
             return num
