@@ -4,9 +4,23 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 
 ## Features
 
-- Support `English`, `French`, `Japanse`, `Korean`, and `Chinese`
+- Support for 5 languages:
+  - English (en-US, en-GB)
+  - French (fr-FR)
+  - Japanese (ja-JP)
+  - Korean (ko-KR)
+  - Chinese (zh-CN)
 - 4X Faster than realtime (macOS M1)
 - Support multiple voices including whispering
+
+### Language Support Notes
+
+- For CJK languages (Chinese, Japanese, Korean):
+  - English letters are not yet properly handled by the tokenizers
+  - Convert or remove English text for best results
+  - See [examples/languages.py](examples/languages.py) for proper usage
+- Language codes must be specified in lowercase (e.g., "en-us", "zh-cn")
+- Each language works best with specific voices, see examples for recommendations
 
 ## Setup
 
