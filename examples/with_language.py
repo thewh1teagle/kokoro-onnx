@@ -3,7 +3,7 @@ pip install kokoro-onnx soundfile
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json
-python examples/with_languages.py
+python examples/with_language.py
 """
 
 import soundfile as sf
