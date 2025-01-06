@@ -1,6 +1,6 @@
-from pathlib import Path
 import json
 from functools import lru_cache
+from pathlib import Path
 
 # https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
 SUPPORTED_LANGUAGES = [

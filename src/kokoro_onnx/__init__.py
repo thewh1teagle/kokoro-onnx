@@ -1,13 +1,15 @@
-from .config import KoKoroConfig, SUPPORTED_LANGUAGES, MAX_PHONEME_LENGTH, SAMPLE_RATE
-from onnxruntime import InferenceSession
-import numpy as np
-from .tokenizer import Tokenizer
-from .log import log
-import time
-import re
-import json
-from functools import lru_cache
 import asyncio
+import json
+import re
+import time
+from functools import lru_cache
+
+import numpy as np
+from onnxruntime import InferenceSession
+
+from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, SUPPORTED_LANGUAGES, KoKoroConfig
+from .log import log
+from .tokenizer import Tokenizer
 
 
 class Kokoro:

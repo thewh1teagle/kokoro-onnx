@@ -4,6 +4,7 @@ Provide a way to enable logging by setting LOG_LEVEL environment variable
 
 import logging
 import os
+
 import colorlog
 
 

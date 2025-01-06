@@ -1,8 +1,10 @@
 import re
-from .config import MAX_PHONEME_LENGTH, VOCAB
-from phonemizer.backend.espeak.wrapper import EspeakWrapper
-import phonemizer
+
 import espeakng_loader
+import phonemizer
+from phonemizer.backend.espeak.wrapper import EspeakWrapper
+
+from .config import MAX_PHONEME_LENGTH, VOCAB
 
 
 class Tokenizer:
