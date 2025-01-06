@@ -1,3 +1,9 @@
+"""
+uv venv -p 3.12
+uv pip install torch==2.5.1 numpy==2.0.2
+uv run fetch_voices.py
+"""
+
 import requests
 import torch
 import numpy as np
