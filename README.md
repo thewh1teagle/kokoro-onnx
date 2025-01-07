@@ -14,7 +14,7 @@ TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgra
 pip install -U kokoro-onnx
 ```
 
-- You also need to place the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json) in the project folder.
+- You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json).
 - Please see examples.
 
 <details>
@@ -27,8 +27,8 @@ Basically open the terminal (PowerShell / Bash) and run the command listed in th
 
 _Note: you don't have to use `uv`. but it just make things much simpler. You can use regular Python as well._
 
-1. Create new project folder (you name it)
-2. Prepare the environment and run in the project folder
+2. Create new project folder (you name it)
+3. Run in the project folder
 
 ```console
 uv init -p 3.12
