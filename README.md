@@ -15,8 +15,6 @@ pip install -U kokoro-onnx
 ```
 
 - You also need to place the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json) in the project folder.
-- We recommend use [uv](https://docs.astral.sh/uv/getting-started/installation) for Python.
-- Python 3.12 is recommended. (`uv init -p 3.12`)
 - Please see examples.
 
 <details>
