@@ -1,6 +1,7 @@
 import json
 from functools import lru_cache
 from pathlib import Path
+from dataclasses import dataclass
 
 # https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
 SUPPORTED_LANGUAGES = [
@@ -15,11 +16,19 @@ MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
 
 
+@dataclass
+class EspeakConfig:
+    lib_path: str = None
+    data_path: str = None
+
+
 class KoKoroConfig:
-    def __init__(self, model_path: str, voices_path: str, espeak_ng_data_path):
+    def __init__(
+        self, model_path: str, voices_path: str, espeak_config: EspeakConfig = None
+    ):
         self.model_path = model_path
         self.voices_path = voices_path
-        self.espeak_ng_data_path = espeak_ng_data_path
+        self.espeak_config = espeak_config
 
     def validate(self):
         if not Path(self.voices_path).exists():

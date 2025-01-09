@@ -7,7 +7,13 @@ from functools import lru_cache
 import numpy as np
 from onnxruntime import InferenceSession
 
-from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, SUPPORTED_LANGUAGES, KoKoroConfig
+from .config import (
+    MAX_PHONEME_LENGTH,
+    SAMPLE_RATE,
+    SUPPORTED_LANGUAGES,
+    KoKoroConfig,
+    EspeakConfig,
+)
 from .log import log
 from .tokenizer import Tokenizer
 import librosa
@@ -15,29 +21,27 @@ import librosa
 
 class Kokoro:
     def __init__(
-        self, model_path: str, voices_path: str, espeak_ng_data_path: str = None
+        self, model_path: str, voices_path: str, espeak_config: EspeakConfig = None
     ):
-        self.config = KoKoroConfig(model_path, voices_path, espeak_ng_data_path)
+        self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
         self.sess = InferenceSession(model_path)
         self.voices: list[str] = self.config.get_voice_names()
-        self.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
+        self.tokenizer = Tokenizer(espeak_config)
 
     @classmethod
     def from_session(
         cls,
         session: InferenceSession,
         voices_path: str,
-        espeak_ng_data_path: str = None,
+        espeak_config: EspeakConfig,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
-        instance.config = KoKoroConfig(
-            session._model_path, voices_path, espeak_ng_data_path
-        )
+        instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
         instance.config.validate()
         instance.voices = instance.config.get_voice_names()
-        instance.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
+        instance.tokenizer = Tokenizer(espeak_config)
         return instance
 
     def _create_audio(self, phonemes: str, voice: str, speed: float):
@@ -66,7 +70,7 @@ class Kokoro:
         create_duration = time.time() - start_t
         speedup_factor = audio_duration / create_duration
         log.debug(
-            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s ({speedup_factor:.2f}x real-time)"
+            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s (More than {speedup_factor:.2f}x real-time)"
         )
         return audio, SAMPLE_RATE
 
@@ -141,7 +145,8 @@ class Kokoro:
         for phonemes in batched_phoenemes:
             audio_part, _ = self._create_audio(phonemes, voice, speed)
             if trim:
-                # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                # Trim leading and trailing silence for a more natural sound concatenation
+                # (initial ~2s, subsequent ~0.02s)
                 audio_part, _ = librosa.effects.trim(audio_part)
             audio.append(audio_part)
         audio = np.concatenate(audio)
@@ -181,7 +186,8 @@ class Kokoro:
                     None, self._create_audio, phonemes, voice, speed
                 )
                 if trim:
-                    # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                    # Trim leading and trailing silence for a more natural sound concatenation
+                    # (initial ~2s, subsequent ~0.02s)
                     audio_part, _ = librosa.effects.trim(audio_part)
                 log.debug(f"Processed chunk {i} of stream")
                 await queue.put((audio_part, sample_rate))
