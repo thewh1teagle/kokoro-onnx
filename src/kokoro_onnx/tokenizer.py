@@ -1,21 +1,21 @@
 import re
-
-import espeakng_loader
 import phonemizer
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
-
-from .config import MAX_PHONEME_LENGTH, VOCAB
+import espeakng_loader
+from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
 
 
 class Tokenizer:
-    def __init__(self, espeak_data_path: str = None, espeak_lib_path: str = None):
-        if not espeak_data_path:
-            espeak_data_path = espeakng_loader.get_data_path()
-        EspeakWrapper.set_data_path(espeak_data_path)
-
-        if not espeak_lib_path:
-            espeak_lib_path = espeakng_loader.get_library_path()
-        EspeakWrapper.set_library(espeak_lib_path)
+    def __init__(self, espeak_config: EspeakConfig = None):
+        if not espeak_config:
+            # Set default paths
+            espeak_config = EspeakConfig.default()
+        if not espeak_config.data_path:
+            espeak_config.data_path = espeakng_loader.get_data_path()
+        if not espeak_config.lib_path:
+            espeak_config.lib_path = espeakng_loader.get_library_path()
+        EspeakWrapper.set_data_path(espeak_config.data_path)
+        EspeakWrapper.set_library(espeak_config.lib_path)
 
     @staticmethod
     def split_num(num):

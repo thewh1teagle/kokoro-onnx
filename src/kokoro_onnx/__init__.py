@@ -7,7 +7,13 @@ from functools import lru_cache
 import numpy as np
 from onnxruntime import InferenceSession
 
-from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, SUPPORTED_LANGUAGES, KoKoroConfig
+from .config import (
+    MAX_PHONEME_LENGTH,
+    SAMPLE_RATE,
+    SUPPORTED_LANGUAGES,
+    KoKoroConfig,
+    EspeakConfig,
+)
 from .log import log
 from .tokenizer import Tokenizer
 import librosa
@@ -15,38 +21,27 @@ import librosa
 
 class Kokoro:
     def __init__(
-        self,
-        model_path: str,
-        voices_path: str,
-        espeak_ng_data_path: str = None,
-        espeak_ng_lib_path: str = None,
+        self, model_path: str, voices_path: str, espeak_config: EspeakConfig = None
     ):
-        self.config = KoKoroConfig(model_path, voices_path, espeak_ng_data_path)
+        self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
         self.sess = InferenceSession(model_path)
         self.voices: list[str] = self.config.get_voice_names()
-        self.tokenizer = Tokenizer(
-            espeak_data_path=espeak_ng_data_path, espeak_lib_path=espeak_ng_lib_path
-        )
+        self.tokenizer = Tokenizer(espeak_config)
 
     @classmethod
     def from_session(
         cls,
         session: InferenceSession,
         voices_path: str,
-        espeak_ng_data_path: str = None,
-        espeak_ng_lib_path: str = None,
+        espeak_config: EspeakConfig,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
-        instance.config = KoKoroConfig(
-            session._model_path, voices_path, espeak_ng_data_path
-        )
+        instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
         instance.config.validate()
         instance.voices = instance.config.get_voice_names()
-        instance.tokenizer = Tokenizer(
-            espeak_data_path=espeak_ng_data_path, espeak_lib_path=espeak_ng_lib_path
-        )
+        instance.tokenizer = Tokenizer(espeak_config)
         return instance
 
     def _create_audio(self, phonemes: str, voice: str, speed: float):
