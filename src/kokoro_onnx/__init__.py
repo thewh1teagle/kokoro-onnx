@@ -39,7 +39,9 @@ class Kokoro:
     ):
         instance = cls.__new__(cls)
         instance.sess = session
-        instance.config = KoKoroConfig(session._model_path, voices_path, espeak_ng_data_path)
+        instance.config = KoKoroConfig(
+            session._model_path, voices_path, espeak_ng_data_path
+        )
         instance.config.validate()
         instance.voices = instance.config.get_voice_names()
         instance.tokenizer = Tokenizer(
@@ -50,7 +52,9 @@ class Kokoro:
     def _create_audio(self, phonemes: str, voice: str, speed: float):
         log.debug(f"Phonemes: {phonemes}")
         if len(phonemes) > MAX_PHONEME_LENGTH:
-            log.warning(f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes")
+            log.warning(
+                f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes"
+            )
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
         tokens = self.tokenizer.tokenize(phonemes)
@@ -63,7 +67,9 @@ class Kokoro:
 
         audio = self.sess.run(
             None,
-            dict(tokens=tokens, style=style, speed=np.ones(1, dtype=np.float32) * speed),
+            dict(
+                tokens=tokens, style=style, speed=np.ones(1, dtype=np.float32) * speed
+            ),
         )[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t

@@ -12,6 +12,7 @@ from onnxruntime import InferenceSession
 import onnxruntime
 import os
 
+
 def create_session():
     # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
     providers = onnxruntime.get_available_providers()
@@ -21,10 +22,13 @@ def create_session():
     sess_options = onnxruntime.SessionOptions()
     # Set threads to num of CPU cores
     cpu_count = os.cpu_count()
-    print(f'Setting threads to CPU cores count: {cpu_count}')
+    print(f"Setting threads to CPU cores count: {cpu_count}")
     sess_options.intra_op_num_threads = cpu_count
-    session = InferenceSession("kokoro-v0_19.onnx", providers=providers, sess_options=sess_options)
+    session = InferenceSession(
+        "kokoro-v0_19.onnx", providers=providers, sess_options=sess_options
+    )
     return session
+
 
 session = create_session()
 kokoro = Kokoro.from_session(session, "voices.json")

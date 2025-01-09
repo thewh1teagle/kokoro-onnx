@@ -53,7 +53,11 @@ class Tokenizer:
         b, c = m[1:].split(".")
         s = "" if b == "1" else "s"
         c = int(c.ljust(2, "0"))
-        coins = f"cent{'' if c == 1 else 's'}" if m[0] == "$" else ("penny" if c == 1 else "pence")
+        coins = (
+            f"cent{'' if c == 1 else 's'}"
+            if m[0] == "$"
+            else ("penny" if c == 1 else "pence")
+        )
         return f"{b} {bill}{s} and {c} {coins}"
 
     @staticmethod
@@ -103,13 +107,17 @@ class Tokenizer:
         text = re.sub(r"(?<=\d)S", " S", text)
         text = re.sub(r"(?<=[BCDFGHJ-NP-TV-Z])'?s\b", "'S", text)
         text = re.sub(r"(?<=X')S\b", "s", text)
-        text = re.sub(r"(?:[A-Za-z]\.){2,} [a-z]", lambda m: m.group().replace(".", "-"), text)
+        text = re.sub(
+            r"(?:[A-Za-z]\.){2,} [a-z]", lambda m: m.group().replace(".", "-"), text
+        )
         text = re.sub(r"(?i)(?<=[A-Z])\.(?=[A-Z])", "-", text)
         return text.strip()
 
     def tokenize(self, phonemes):
         if len(phonemes) > MAX_PHONEME_LENGTH:
-            raise ValueError(f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes")
+            raise ValueError(
+                f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
+            )
         return [i for i in map(VOCAB.get, phonemes) if i is not None]
 
     def phonemize(self, text, lang="en-us", norm=True):
@@ -119,11 +127,20 @@ class Tokenizer:
         if norm:
             text = Tokenizer.normalize_text(text)
 
-        phonemes = phonemizer.phonemize(text, lang, preserve_punctuation=True, with_stress=True)
+        phonemes = phonemizer.phonemize(
+            text, lang, preserve_punctuation=True, with_stress=True
+        )
 
         # https://en.wiktionary.org/wiki/kokoro#English
-        phonemes = phonemes.replace("kəkˈoːɹoʊ", "kˈoʊkəɹoʊ").replace("kəkˈɔːɹəʊ", "kˈəʊkəɹəʊ")
-        phonemes = phonemes.replace("ʲ", "j").replace("r", "ɹ").replace("x", "k").replace("ɬ", "l")
+        phonemes = phonemes.replace("kəkˈoːɹoʊ", "kˈoʊkəɹoʊ").replace(
+            "kəkˈɔːɹəʊ", "kˈəʊkəɹəʊ"
+        )
+        phonemes = (
+            phonemes.replace("ʲ", "j")
+            .replace("r", "ɹ")
+            .replace("x", "k")
+            .replace("ɬ", "l")
+        )
         phonemes = re.sub(r"(?<=[a-zɹː])(?=hˈʌndɹɪd)", " ", phonemes)
         phonemes = re.sub(r' z(?=[;:,.!?¡¿—…"«»“” ]|$)', "z", phonemes)
         if lang == "en-us":
