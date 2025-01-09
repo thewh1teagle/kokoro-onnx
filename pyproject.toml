@@ -1,14 +1,14 @@
 [project]
 name = "kokoro-onnx"
-version = "0.2.4"
+version = "0.2.5"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.9,<3.11" # librosa -> llvmlite have no support for python3.11. 
+requires-python = ">=3.9,<3.13" # librosa -> llvmlite have no support for python > 3.12. 
 dependencies = [
-    "numba>=0.60.0",
+    "numba>=0.60.0", # librosa -> numba have issues with python 3.12
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
     "espeakng-loader>=0.2.1",
