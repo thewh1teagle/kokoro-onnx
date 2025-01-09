@@ -3,6 +3,7 @@
 ## Publish new version
 
 ```console
+rm -rf dist
 uv build
 UV_PUBLISH_TOKEN="pypi token here" uv publish
 ```
