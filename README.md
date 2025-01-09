@@ -31,7 +31,7 @@ _Note: you don't have to use `uv`. but it just make things much simpler. You can
 3. Run in the project folder
 
 ```console
-uv init -p 3.10
+uv init -p 3.12
 uv add kokoro-onnx soundfile
 ```
 
