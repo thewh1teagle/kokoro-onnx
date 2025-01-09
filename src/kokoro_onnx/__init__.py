@@ -15,13 +15,19 @@ import librosa
 
 class Kokoro:
     def __init__(
-        self, model_path: str, voices_path: str, espeak_ng_data_path: str = None
+        self,
+        model_path: str,
+        voices_path: str,
+        espeak_ng_data_path: str = None,
+        espeak_ng_lib_path: str = None,
     ):
         self.config = KoKoroConfig(model_path, voices_path, espeak_ng_data_path)
         self.config.validate()
         self.sess = InferenceSession(model_path)
         self.voices: list[str] = self.config.get_voice_names()
-        self.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
+        self.tokenizer = Tokenizer(
+            espeak_data_path=espeak_ng_data_path, espeak_lib_path=espeak_ng_lib_path
+        )
 
     @classmethod
     def from_session(
@@ -29,23 +35,22 @@ class Kokoro:
         session: InferenceSession,
         voices_path: str,
         espeak_ng_data_path: str = None,
+        espeak_ng_lib_path: str = None,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
-        instance.config = KoKoroConfig(
-            session._model_path, voices_path, espeak_ng_data_path
-        )
+        instance.config = KoKoroConfig(session._model_path, voices_path, espeak_ng_data_path)
         instance.config.validate()
         instance.voices = instance.config.get_voice_names()
-        instance.tokenizer = Tokenizer(espeak_data_path=espeak_ng_data_path)
+        instance.tokenizer = Tokenizer(
+            espeak_data_path=espeak_ng_data_path, espeak_lib_path=espeak_ng_lib_path
+        )
         return instance
 
     def _create_audio(self, phonemes: str, voice: str, speed: float):
         log.debug(f"Phonemes: {phonemes}")
         if len(phonemes) > MAX_PHONEME_LENGTH:
-            log.warning(
-                f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes"
-            )
+            log.warning(f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes")
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
         tokens = self.tokenizer.tokenize(phonemes)
@@ -58,15 +63,13 @@ class Kokoro:
 
         audio = self.sess.run(
             None,
-            dict(
-                tokens=tokens, style=style, speed=np.ones(1, dtype=np.float32) * speed
-            ),
+            dict(tokens=tokens, style=style, speed=np.ones(1, dtype=np.float32) * speed),
         )[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
         speedup_factor = audio_duration / create_duration
         log.debug(
-            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s ({speedup_factor:.2f}x real-time)"
+            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s (More than {speedup_factor:.2f}x real-time)"
         )
         return audio, SAMPLE_RATE
 
@@ -141,7 +144,8 @@ class Kokoro:
         for phonemes in batched_phoenemes:
             audio_part, _ = self._create_audio(phonemes, voice, speed)
             if trim:
-                # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                # Trim leading and trailing silence for a more natural sound concatenation
+                # (initial ~2s, subsequent ~0.02s)
                 audio_part, _ = librosa.effects.trim(audio_part)
             audio.append(audio_part)
         audio = np.concatenate(audio)
@@ -181,7 +185,8 @@ class Kokoro:
                     None, self._create_audio, phonemes, voice, speed
                 )
                 if trim:
-                    # Trim leading and trailing silence for a more natural sound concatenation (initial ~2s, subsequent ~0.02s)
+                    # Trim leading and trailing silence for a more natural sound concatenation
+                    # (initial ~2s, subsequent ~0.02s)
                     audio_part, _ = librosa.effects.trim(audio_part)
                 log.debug(f"Processed chunk {i} of stream")
                 await queue.put((audio_part, sample_rate))
