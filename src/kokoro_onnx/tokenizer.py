@@ -8,8 +8,7 @@ from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
 class Tokenizer:
     def __init__(self, espeak_config: EspeakConfig = None):
         if not espeak_config:
-            # Set default paths
-            espeak_config = EspeakConfig.default()
+            espeak_config = EspeakConfig()
         if not espeak_config.data_path:
             espeak_config.data_path = espeakng_loader.get_data_path()
         if not espeak_config.lib_path:

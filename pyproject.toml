@@ -6,13 +6,13 @@ readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.9,<3.11" # librosa -> llvmlite have no support for python3.11. 
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
     "espeakng-loader>=0.2.1",
     "phonemizer-fork==3.3.1", # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged
-    "librosa>=0.10.2.post1",
+    "librosa>=0.10.2.post1",  # TODO: get rid of librosa with something that works on more versions and platforms.
 ]
 
 [project.urls]
