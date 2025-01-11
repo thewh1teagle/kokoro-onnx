@@ -34,7 +34,7 @@ class Kokoro:
         cls,
         session: InferenceSession,
         voices_path: str,
-        espeak_config: EspeakConfig,
+        espeak_config: EspeakConfig = None,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
