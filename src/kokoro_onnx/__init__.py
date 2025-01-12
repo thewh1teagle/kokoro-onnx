@@ -1,8 +1,10 @@
 import asyncio
+from collections.abc import AsyncGenerator
 import json
 import re
 import time
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 import numpy as np
 from onnxruntime import InferenceSession
@@ -18,10 +20,16 @@ from .log import log
 from .tokenizer import Tokenizer
 import librosa
 
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
 
 class Kokoro:
     def __init__(
-        self, model_path: str, voices_path: str, espeak_config: EspeakConfig = None
+        self,
+        model_path: str,
+        voices_path: str,
+        espeak_config: EspeakConfig | None = None,
     ):
         self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
@@ -34,7 +42,7 @@ class Kokoro:
         cls,
         session: InferenceSession,
         voices_path: str,
-        espeak_config: EspeakConfig = None,
+        espeak_config: EspeakConfig | None = None,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
@@ -44,7 +52,9 @@ class Kokoro:
         instance.tokenizer = Tokenizer(espeak_config)
         return instance
 
-    def _create_audio(self, phonemes: str, voice: str, speed: float):
+    def _create_audio(
+        self, phonemes: str, voice: str, speed: float
+    ) -> tuple[NDArray[np.float32], int]:
         log.debug(f"Phonemes: {phonemes}")
         if len(phonemes) > MAX_PHONEME_LENGTH:
             log.warning(
@@ -75,19 +85,19 @@ class Kokoro:
         return audio, SAMPLE_RATE
 
     @lru_cache
-    def get_voice_style(self, name: str):
+    def get_voice_style(self, name: str) -> NDArray[np.float32]:
         with open(self.config.voices_path) as f:
             voices = json.load(f)
         return np.array(voices[name], dtype=np.float32)
 
-    def _split_phonemes(self, phonemes: str):
+    def _split_phonemes(self, phonemes: str) -> list[str]:
         """
         Split phonemes into batches of MAX_PHONEME_LENGTH
         Prefer splitting at punctuation marks.
         """
         # Regular expression to split by punctuation and keep them
         words = re.split(r"([.,!?;])", phonemes)
-        batched_phoenemes = []
+        batched_phoenemes: list[str] = []
         current_batch = ""
 
         for part in words:
@@ -118,10 +128,10 @@ class Kokoro:
         text: str,
         voice: str,
         speed: float = 1.0,
-        lang="en-us",
-        phonemes: str = None,
-        trim=True,
-    ):
+        lang: str = "en-us",
+        phonemes: str | None = None,
+        trim: bool = True,
+    ) -> tuple[NDArray[np.float32], int]:
         """
         Create audio from text using the specified voice and speed.
         """
@@ -158,10 +168,10 @@ class Kokoro:
         text: str,
         voice: str,
         speed: float = 1.0,
-        lang="en-us",
-        phonemes: str = None,
-        trim=True,
-    ):
+        lang: str = "en-us",
+        phonemes: str | None = None,
+        trim: bool = True,
+    ) -> AsyncGenerator[tuple[NDArray[np.float32], int], None]:
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
         """
@@ -175,7 +185,7 @@ class Kokoro:
             phonemes = self.tokenizer.phonemize(text, lang)
 
         batched_phonemes = self._split_phonemes(phonemes)
-        queue = asyncio.Queue()
+        queue: asyncio.Queue[tuple[NDArray[np.float32], int] | None] = asyncio.Queue()
 
         async def process_batches():
             """Process phoneme batches in the background."""
@@ -202,8 +212,8 @@ class Kokoro:
                 break
             yield chunk
 
-    def get_voices(self):
+    def get_voices(self) -> list[str]:
         return self.voices
 
-    def get_languages(self):
+    def get_languages(self) -> list[str]:
         return SUPPORTED_LANGUAGES

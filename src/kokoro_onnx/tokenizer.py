@@ -6,7 +6,7 @@ from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
 
 
 class Tokenizer:
-    def __init__(self, espeak_config: EspeakConfig = None):
+    def __init__(self, espeak_config: EspeakConfig | None = None):
         if not espeak_config:
             espeak_config = EspeakConfig()
         if not espeak_config.data_path:
@@ -60,12 +60,12 @@ class Tokenizer:
         return f"{b} {bill}{s} and {c} {coins}"
 
     @staticmethod
-    def point_num(num):
+    def point_num(num) -> str:
         a, b = num.group().split(".")
         return " point ".join([a, " ".join(b)])
 
     @staticmethod
-    def normalize_text(text):
+    def normalize_text(text) -> str:
         # remove leading and trailing whitespace and empty lines
         text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
         # replace curly quotes with straight quotes
@@ -119,7 +119,7 @@ class Tokenizer:
             )
         return [i for i in map(VOCAB.get, phonemes) if i is not None]
 
-    def phonemize(self, text, lang="en-us", norm=True):
+    def phonemize(self, text, lang="en-us", norm=True) -> str:
         """
         lang can be 'en-us' or 'en-gb'
         """

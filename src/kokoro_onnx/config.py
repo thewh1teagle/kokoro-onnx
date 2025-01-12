@@ -18,13 +18,16 @@ SAMPLE_RATE = 24000
 
 @dataclass
 class EspeakConfig:
-    lib_path: str = None
-    data_path: str = None
+    lib_path: str | None = None
+    data_path: str | None = None
 
 
 class KoKoroConfig:
     def __init__(
-        self, model_path: str, voices_path: str, espeak_config: EspeakConfig = None
+        self,
+        model_path: str,
+        voices_path: str,
+        espeak_config: EspeakConfig | None = None,
     ):
         self.model_path = model_path
         self.voices_path = voices_path
@@ -48,7 +51,7 @@ class KoKoroConfig:
             raise FileNotFoundError(error_msg)
 
     @lru_cache
-    def get_voice_names(self):
+    def get_voice_names(self) -> list[str]:
         with open(self.voices_path) as f:
             voices = json.load(f)
         return voices.keys()
