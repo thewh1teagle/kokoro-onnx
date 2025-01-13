@@ -6,8 +6,8 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 
 ## Features
 
-- Support `English`, `French`, `Japanse`, `Korean`, and `Chinese`
-- 4X Faster than realtime (macOS M1)
+- Support `English`, (`French`, `Japanse`, `Korean`, and `Chinese` planned)
+- Near realtime speed (macOS M1)
 - Support multiple voices including whispering
 
 ## Setup
