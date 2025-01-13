@@ -9,4 +9,4 @@
 
 ## Description
 
-<!-- Short description of the feature/bug this PR resolve -->
+<!-- Short description of the feature/bug this PR resolve; Optional: Closes #123 -->
