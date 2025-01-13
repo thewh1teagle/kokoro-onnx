@@ -2,9 +2,7 @@
 
 TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgrad/Kokoro-TTS)
 
-
 https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
-
 
 ## Features
 
@@ -61,14 +59,11 @@ See [examples](examples)
 
 Available voices are `af`, `af_bella`, `af_nicole`, `af_sarah`, `af_sky`, `am_adam`, `am_michael`, `bf_emma`, `bf_isabella`, `bm_george`, `bm_lewis`
 
-
-
-
-
-
-
-
-
 ## Contribute
 
 See [CONTRIBUTE.md](CONTRIBUTE.md)
+
+## License
+
+- kokoro-onnx: MIT
+- kokoro model: Apache 2.0
