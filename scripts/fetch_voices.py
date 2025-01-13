@@ -1,7 +1,14 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "numpy==2.0.2",
+#     "requests",
+#     "torch==2.5.1",
+# ]
+# ///
+# declaring requests is necessary for running
 """
-uv venv -p 3.12
-uv pip install torch==2.5.1 numpy==2.0.2
-uv run fetch_voices.py
+run this file via `uv run fetch_voices.py`
 """
 
 import io
