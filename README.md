@@ -38,8 +38,13 @@ uv add kokoro-onnx soundfile
 ```
 
 4. Paste the contents of [`examples/save.py`](https://github.com/thewh1teagle/kokoro-onnx/blob/main/examples/save.py) in `hello.py`
-5. Download the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.json`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices) and place them in the same directory.
+5. Download the file [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx) and place it in the same directory.
 6. Run
+```console
+uv run https://raw.githubusercontent.com/thewh1teagle/kokoro-onnx/refs/heads/main/scripts/fetch_voices.py
+```
+
+8. Run
 
 ```console
 uv run hello.py
