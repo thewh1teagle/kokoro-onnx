@@ -10,7 +10,3 @@
 ## Description
 
 <!-- Short description of the feature/bug this PR resolve -->
-
-## Related
-
-<!-- Optional: Closes #123 -->
