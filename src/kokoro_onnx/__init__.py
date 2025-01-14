@@ -1,27 +1,24 @@
 import asyncio
-from collections.abc import AsyncGenerator
 import json
 import re
 import time
+from collections.abc import AsyncGenerator
 from functools import lru_cache
-from typing import TYPE_CHECKING
 
+import librosa
 import numpy as np
+from numpy.typing import NDArray
 from onnxruntime import InferenceSession
 
 from .config import (
     MAX_PHONEME_LENGTH,
     SAMPLE_RATE,
     SUPPORTED_LANGUAGES,
-    KoKoroConfig,
     EspeakConfig,
+    KoKoroConfig,
 )
 from .log import log
 from .tokenizer import Tokenizer
-import librosa
-
-if TYPE_CHECKING:
-    from numpy.typing import NDArray
 
 
 class Kokoro:
