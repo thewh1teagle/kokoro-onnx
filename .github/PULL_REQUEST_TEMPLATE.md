@@ -1,9 +1,10 @@
 ## Checklist
 
 - [ ] Discussed idea or confident it's critical (See Contribute.md).
-- [ ] Checked linting/formatting (`uv run ruff format && uv run ruff check`).
-- [ ] PR is from a **feature branch**, not `main`.
 - [ ] One feature/bug per PR (unless minor/related).
+- [ ] PR is from a **feature branch**, not `main`.
+- [ ] I ran at least one example to ensure the code works.
+- [ ] Checked linting/formatting (`uv run ruff format && uv run ruff check`).
 
 ---
 
