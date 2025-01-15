@@ -6,9 +6,10 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 
 ## Features
 
-- Support `English`, (`French`, `Japanse`, `Korean`, and `Chinese` planned)
-- Near realtime speed (macOS M1)
-- Support multiple voices including whispering
+- Supports English (with French, Japanese, Korean, and Chinese coming soon)
+- Fast performance near real-time on macOS M1
+- Multiple voices, including whispering
+- Lightweight: ~300MB (quantized: ~80MB)
 
 ## Setup
 
