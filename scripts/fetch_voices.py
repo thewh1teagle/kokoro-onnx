@@ -1,7 +1,15 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "numpy==2.0.2",
+#     "requests",
+#     "torch==2.5.1",
+# ]
+# ///
+# declaring requests is necessary for running
 """
-uv venv -p 3.12
-uv pip install torch==2.5.1 numpy==2.0.2
-uv run fetch_voices.py
+Run this file via:
+uv run scripts/fetch_voices.py
 """
 
 import io
@@ -34,5 +42,7 @@ for voice in voices:
     voice_data: np.ndarray = torch.load(content).numpy()
     voices_json[voice] = voice_data.tolist()
 
-with open("voices.json", "w") as f:
+path = "voices.json"
+with open(path, "w") as f:
     json.dump(voices_json, f, indent=4)
+print(f"Created {path}")
