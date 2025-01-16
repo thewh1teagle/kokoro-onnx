@@ -27,10 +27,6 @@ class Tokenizer:
         try:
             ctypes.cdll.LoadLibrary(espeak_config.lib_path)
         except Exception as e:
-            # Show OS information on error and try fallback to system wide
-            environment_info = "OS: {}\nRelease: {}\nPython: {}".format(
-                platform.platform(), platform.release(), sys.version
-            )
             log.error(f"Failed to load espeak shared library: {e}")
             log.warning("Falling back to system wide espeak-ng library")
 
