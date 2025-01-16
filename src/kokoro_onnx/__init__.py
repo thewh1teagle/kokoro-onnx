@@ -57,7 +57,7 @@ class Kokoro:
         return instance
 
     def _create_audio(
-        self, phonemes: str, voice: str, speed: float
+        self, phonemes: str, voice: NDArray[np.float32], speed: float
     ) -> tuple[NDArray[np.float32], int]:
         log.debug(f"Phonemes: {phonemes}")
         if len(phonemes) > MAX_PHONEME_LENGTH:
@@ -71,13 +71,13 @@ class Kokoro:
             len(tokens) <= MAX_PHONEME_LENGTH
         ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
 
-        style = self.get_voice_style(voice)[len(tokens)]
+        voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
 
         audio = self.sess.run(
             None,
             dict(
-                tokens=tokens, style=style, speed=np.ones(1, dtype=np.float32) * speed
+                tokens=tokens, style=voice, speed=np.ones(1, dtype=np.float32) * speed
             ),
         )[0]
         audio_duration = len(audio) / SAMPLE_RATE
@@ -130,7 +130,7 @@ class Kokoro:
     def create(
         self,
         text: str,
-        voice: str,
+        voice: str | NDArray[np.float32],
         speed: float = 1.0,
         lang: str = "en-us",
         phonemes: str | None = None,
@@ -144,7 +144,10 @@ class Kokoro:
             lang in SUPPORTED_LANGUAGES
         ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
-        assert voice in self.voices, f"Voice {voice} not found in available voices"
+
+        if isinstance(voice, str):
+            assert voice in self.voices, f"Voice {voice} not found in available voices"
+            voice = self.get_voice_style(voice)
 
         start_t = time.time()
         if not phonemes:
@@ -170,7 +173,7 @@ class Kokoro:
     async def create_stream(
         self,
         text: str,
-        voice: str,
+        voice: str | NDArray[np.float32],
         speed: float = 1.0,
         lang: str = "en-us",
         phonemes: str | None = None,
@@ -183,7 +186,10 @@ class Kokoro:
             lang in SUPPORTED_LANGUAGES
         ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
-        assert voice in self.voices, f"Voice {voice} not found in available voices"
+
+        if isinstance(voice, str):
+            assert voice in self.voices, f"Voice {voice} not found in available voices"
+            voice = self.get_voice_style(voice)
 
         if not phonemes:
             phonemes = self.tokenizer.phonemize(text, lang)
