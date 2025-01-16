@@ -19,6 +19,7 @@ from .config import (
 )
 from .log import log
 from .tokenizer import Tokenizer
+import os
 
 
 class Kokoro:
@@ -30,7 +31,13 @@ class Kokoro:
     ):
         self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
-        self.sess = InferenceSession(model_path)
+        # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
+        providers = ["CPUExecutionProvider"]
+        env_provider = os.getenv("ONNX_PROVIDER")
+        if env_provider:
+            providers = [env_provider]
+        log.debug(f"Providers: {providers}")
+        self.sess = InferenceSession(model_path, providers=providers)
         self.voices: list[str] = self.config.get_voice_names()
         self.tokenizer = Tokenizer(espeak_config)
 
