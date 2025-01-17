@@ -250,15 +250,13 @@ wheels = [
 
 [[package]]
 name = "espeakng-loader"
-version = "0.2.3"
+version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/e6/b292cafd3fd8d5dbe4c22bc1d1e0fbef7ba21b83e97d156ed14648464aa9/espeakng_loader-0.2.3-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:f586428a6577ae46c7bbeac7aa58f6a6c3abf83401eb55e490b4e77e11cda868", size = 9938381 },
-    { url = "https://files.pythonhosted.org/packages/61/da/03947b59f15f2b0f243ce87681bd9d02e77a7ba38adb3ea1e3ac9758914c/espeakng_loader-0.2.3-py3-none-macosx_11_0_arm64.whl", hash = "sha256:14fa5bd92bc37662e85cf13c744c89b0d0026761592ea4b27a37162315c68c74", size = 9892554 },
-    { url = "https://files.pythonhosted.org/packages/a4/d3/c9a3ef6956ad28fa941422ee3930b25fc3475fdcf7528908e57be3fd0e73/espeakng_loader-0.2.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f2e664f3b328da0294ea68802a48e5a50519bcbbc9ba5cda89ec90eea7edc1e0", size = 9236682 },
-    { url = "https://files.pythonhosted.org/packages/81/04/2e37f8c4f6a1b57c2175a2da142552499c22ebba5f824f4060be37213e55/espeakng_loader-0.2.3-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:59561c7d732eee35cce7778fc07792a2a3105eb95406e11aa71af355ab0c411a", size = 10037731 },
-    { url = "https://files.pythonhosted.org/packages/de/ff/a611d5c48f6646cc0b942ea2da27773cd88363e6a231008c76acfa2326e1/espeakng_loader-0.2.3-py3-none-win_amd64.whl", hash = "sha256:90551eb65ed5fa29e364fecf13f13889304a3ba0364b4ed5cc8d0ca0f8cd689b", size = 9437283 },
-    { url = "https://files.pythonhosted.org/packages/9a/03/a5507ff1e4b987de1c5f54fd8c4097d5337d8a23c508f3ab5f7423aa2241/espeakng_loader-0.2.3-py3-none-win_arm64.whl", hash = "sha256:c0a4f2b3cabb0f24e36caeb05974bb0a8a98a4a41a773dcedf7db7d57c581d52", size = 9426832 },
+    { url = "https://files.pythonhosted.org/packages/f8/92/f44ed7f531143c3c6c97d56e2b0f9be8728dc05e18b96d46eb539230ed46/espeakng_loader-0.2.4-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:b77477ae2ddf62a748e04e49714eabb2f3a24f344166200b00539083bd669904", size = 9938387 },
+    { url = "https://files.pythonhosted.org/packages/a8/26/258c0cd43b9bc1043301c5f61767d6a6c3b679df82790c9cb43a3277b865/espeakng_loader-0.2.4-py3-none-macosx_11_0_arm64.whl", hash = "sha256:d27cdca31112226e7299d8562e889d3e38a1e48055c9ee381b45d669072ee59f", size = 9892565 },
+    { url = "https://files.pythonhosted.org/packages/de/1e/25ec5ab07528c0fbb215a61800a38eca05c8a99445515a02d7fa5debcb32/espeakng_loader-0.2.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:08721baf27d13d461f6be6eed9a65277e70d68234ff484fd8b9897b222cdcb6d", size = 10078484 },
+    { url = "https://files.pythonhosted.org/packages/d9/ad/1b768d8daffc2996e07bbcb6f534d8de3202cd75fce1f1c45eced1ce6465/espeakng_loader-0.2.4-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:d1e798141b46a050cdb75fcf3c17db969bb2c40394f3f4a48910655d547508b9", size = 10037736 },
 ]
 
 [[package]]
@@ -350,7 +348,7 @@ wheels = [
 
 [[package]]
 name = "kokoro-onnx"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "colorlog" },
@@ -371,7 +369,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "colorlog", specifier = ">=6.9.0" },
-    { name = "espeakng-loader", specifier = ">=0.2.3" },
+    { name = "espeakng-loader", specifier = ">=0.2.4" },
     { name = "librosa", specifier = ">=0.10.2.post1" },
     { name = "numba", specifier = ">=0.60.0" },
     { name = "onnxruntime", specifier = ">=1.20.1" },
