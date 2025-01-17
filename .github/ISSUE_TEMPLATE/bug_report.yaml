@@ -46,9 +46,12 @@ body:
           label: Relevant log output
           description: |
               Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+              
               You can enable logs by setting LOG_LEVEL=DEBUG environment variable.
+              
               Example (Linux/macOS):
                 LOG_LEVEL=DEBUG python main.py
+              
               Example (PowerShell):
                 $env:LOG_LEVEL=DEBUG; python main.py
 
