@@ -1,6 +1,10 @@
 import asyncio
+import importlib
 import importlib.metadata
+import importlib.util
 import json
+import os
+import platform
 import re
 import time
 from collections.abc import AsyncGenerator
@@ -8,8 +12,8 @@ from functools import lru_cache
 
 import librosa
 import numpy as np
+import onnxruntime as rt
 from numpy.typing import NDArray
-from onnxruntime import InferenceSession
 
 from .config import (
     MAX_PHONEME_LENGTH,
@@ -20,9 +24,6 @@ from .config import (
 )
 from .log import log
 from .tokenizer import Tokenizer
-import os
-import importlib
-import platform
 
 
 class Kokoro:
@@ -38,20 +39,29 @@ class Kokoro:
         )
         self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
+
         # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
         providers = ["CPUExecutionProvider"]
+
+        # Check if kokoro-onnx installed with kokoro-onnx[gpu] feature (Windows/Linux)
+        gpu_enabled = importlib.util.find_spec("onnxruntime-gpu")
+        if gpu_enabled:
+            providers: list[str] = rt.get_available_providers()
+
+        # Check if ONNX_PROVIDER environment variable was set
         env_provider = os.getenv("ONNX_PROVIDER")
         if env_provider:
             providers = [env_provider]
+
         log.debug(f"Providers: {providers}")
-        self.sess = InferenceSession(model_path, providers=providers)
+        self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: list[str] = self.config.get_voice_names()
         self.tokenizer = Tokenizer(espeak_config)
 
     @classmethod
     def from_session(
         cls,
-        session: InferenceSession,
+        session: rt.InferenceSession,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
     ):

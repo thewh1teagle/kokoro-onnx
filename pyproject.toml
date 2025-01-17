@@ -1,6 +1,6 @@
 [project]
 name = "kokoro-onnx"
-version = "0.3.2"
+version = "0.3.3"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
@@ -20,6 +20,15 @@ dependencies = [
 Homepage = "https://github.com/thewh1teagle/kokoro-onnx"
 Repository = "https://github.com/thewh1teagle/kokoro-onnx"
 Issues = "https://github.com/thewh1teagle/kokoro-onnx/issues"
+
+
+
+[project.optional-dependencies]
+# Windows/Linux gpu feature
+# Install with kokoro-onnx[gpu]
+gpu = [
+    "onnxruntime-gpu>=1.20.1; sys_platform != 'darwin'", 
+]
 
 [build-system]
 requires = ["hatchling"]
