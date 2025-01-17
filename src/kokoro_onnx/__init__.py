@@ -1,4 +1,5 @@
 import asyncio
+import importlib.metadata
 import json
 import re
 import time
@@ -20,6 +21,8 @@ from .config import (
 from .log import log
 from .tokenizer import Tokenizer
 import os
+import importlib
+import platform
 
 
 class Kokoro:
@@ -29,6 +32,10 @@ class Kokoro:
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
     ):
+        # Show useful information for bug reports
+        log.debug(
+            f"koko-onnx version {importlib.metadata.version('kokoro-onnx')} on {platform.platform()} {platform.version()}"
+        )
         self.config = KoKoroConfig(model_path, voices_path, espeak_config)
         self.config.validate()
         # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
