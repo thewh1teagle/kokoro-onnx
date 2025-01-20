@@ -9,6 +9,7 @@ import re
 import time
 from collections.abc import AsyncGenerator
 from functools import lru_cache
+from tqdm import tqdm
 
 import librosa
 import numpy as np
@@ -176,7 +177,7 @@ class Kokoro:
         log.debug(
             f"Creating audio for {len(batched_phoenemes)} batches for {len(phonemes)} phonemes"
         )
-        for phonemes in batched_phoenemes:
+        for phonemes in tqdm(batched_phoenemes):
             audio_part, _ = self._create_audio(phonemes, voice, speed)
             if trim:
                 # Trim leading and trailing silence for a more natural sound concatenation
