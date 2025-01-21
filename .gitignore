@@ -19,6 +19,7 @@ espeak-ng-data/
 *.so
 *.dll
 *.m4a
+*.npz
 
 # Virtual environments
 .venv

@@ -2,6 +2,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 from dataclasses import dataclass
+import numpy as np
 
 # https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
 SUPPORTED_LANGUAGES = [
@@ -39,7 +40,7 @@ class KoKoroConfig:
             error_msg += (
                 "\nYou can download the voices file using the following command:"
             )
-            error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json"
+            error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz"
             raise FileNotFoundError(error_msg)
 
         if not Path(self.model_path).exists():
@@ -49,12 +50,6 @@ class KoKoroConfig:
             )
             error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx"
             raise FileNotFoundError(error_msg)
-
-    @lru_cache
-    def get_voice_names(self) -> list[str]:
-        with open(self.voices_path) as f:
-            voices = json.load(f)
-        return voices.keys()
 
 
 def get_vocab():

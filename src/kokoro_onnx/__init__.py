@@ -2,13 +2,11 @@ import asyncio
 import importlib
 import importlib.metadata
 import importlib.util
-import json
 import os
 import platform
 import re
 import time
 from collections.abc import AsyncGenerator
-from functools import lru_cache
 
 import librosa
 import numpy as np
@@ -55,7 +53,7 @@ class Kokoro:
 
         log.debug(f"Providers: {providers}")
         self.sess = rt.InferenceSession(model_path, providers=providers)
-        self.voices: list[str] = self.config.get_voice_names()
+        self.voices: np.ndarray = np.load(voices_path)
         self.tokenizer = Tokenizer(espeak_config)
 
     @classmethod
@@ -105,11 +103,8 @@ class Kokoro:
         )
         return audio, SAMPLE_RATE
 
-    @lru_cache
     def get_voice_style(self, name: str) -> NDArray[np.float32]:
-        with open(self.config.voices_path) as f:
-            voices = json.load(f)
-        return np.array(voices[name], dtype=np.float32)
+        return self.voices[name]
 
     def _split_phonemes(self, phonemes: str) -> list[str]:
         """
@@ -240,7 +235,7 @@ class Kokoro:
             yield chunk
 
     def get_voices(self) -> list[str]:
-        return self.voices
+        return list(self.voices.keys())
 
     def get_languages(self) -> list[str]:
         return SUPPORTED_LANGUAGES

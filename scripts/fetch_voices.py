@@ -13,13 +13,11 @@ uv run scripts/fetch_voices.py
 """
 
 import io
-import json
-
 import numpy as np
 import requests
 import torch
 
-voices = [
+names = [
     "af",
     "af_bella",
     "af_nicole",
@@ -32,17 +30,20 @@ voices = [
     "bm_george",
     "bm_lewis",
 ]
-voices_json = {}
-pattern = "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/{voice}.pt"
-for voice in voices:
-    url = pattern.format(voice=voice)
+
+pattern = "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/{name}.pt"
+voices = {}
+
+for name in names:
+    url = pattern.format(name=name)
     print(f"Downloading {url}")
     r = requests.get(url)
+    r.raise_for_status()  # Ensure the request was successful
     content = io.BytesIO(r.content)
-    voice_data: np.ndarray = torch.load(content).numpy()
-    voices_json[voice] = voice_data.tolist()
+    data: np.ndarray = torch.load(content).numpy()
+    voices[name] = data
 
-path = "voices.json"
-with open(path, "w") as f:
-    json.dump(voices_json, f, indent=4)
-print(f"Created {path}")
+# Save all voices to a single .npz file
+npz_path = "voices.npz"
+np.savez(npz_path, **voices)
+print(f"Created {npz_path}")
