@@ -8,12 +8,13 @@ authors = [
 ]
 requires-python = ">=3.9,<3.13" # librosa -> llvmlite have no support for python > 3.12. 
 dependencies = [
-    "numba>=0.60.0", # librosa -> numba have issues with python 3.12
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
     "espeakng-loader>=0.2.4",
     "phonemizer-fork==3.3.1", # TODO: remove once https://github.com/thewh1teagle/espeakng-loader/issues/2 merged
-    "librosa>=0.10.2.post1",  # TODO: get rid of librosa with something that works on more versions and platforms.
+    "librosa>=0.10.2.post1", # TODO: get rid of librosa with something that works on more versions and platforms.
+    "numba>=0.60.0", # librosa -> numba have issues with python 3.12
+    "numpy>=2.0.2",
 ]
 
 [project.urls]

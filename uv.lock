@@ -357,6 +357,7 @@ dependencies = [
     { name = "espeakng-loader" },
     { name = "librosa" },
     { name = "numba" },
+    { name = "numpy" },
     { name = "onnxruntime" },
     { name = "phonemizer-fork" },
 ]
@@ -379,6 +380,7 @@ requires-dist = [
     { name = "espeakng-loader", specifier = ">=0.2.4" },
     { name = "librosa", specifier = ">=0.10.2.post1" },
     { name = "numba", specifier = ">=0.60.0" },
+    { name = "numpy", specifier = ">=2.0.2" },
     { name = "onnxruntime", specifier = ">=1.20.1" },
     { name = "onnxruntime-gpu", marker = "sys_platform != 'darwin' and extra == 'gpu'", specifier = ">=1.20.1" },
     { name = "phonemizer-fork", specifier = "==3.3.1" },
