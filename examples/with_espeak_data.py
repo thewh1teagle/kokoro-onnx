@@ -2,7 +2,7 @@
 pip install kokoro-onnx soundfile
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz
 python examples/with_espeak_data.py
 """
 
@@ -11,7 +11,7 @@ from kokoro_onnx import Kokoro, EspeakConfig
 
 kokoro = Kokoro(
     "kokoro-v0_19.onnx",
-    "voices.json",
+    "voices.npz",
     espeak_config=EspeakConfig(data_path="./espeak-ng-data"),
 )
 samples, sample_rate = kokoro.create(
