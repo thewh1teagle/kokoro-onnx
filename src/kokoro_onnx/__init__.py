@@ -67,7 +67,7 @@ class Kokoro:
         instance.sess = session
         instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
         instance.config.validate()
-        instance.voices = instance.config.get_voice_names()
+        instance.voices = np.load(voices_path)
         instance.tokenizer = Tokenizer(espeak_config)
         return instance
 

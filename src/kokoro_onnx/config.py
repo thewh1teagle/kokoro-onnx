@@ -1,8 +1,5 @@
-import json
-from functools import lru_cache
 from pathlib import Path
 from dataclasses import dataclass
-import numpy as np
 
 # https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
 SUPPORTED_LANGUAGES = [
