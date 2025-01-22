@@ -2,7 +2,7 @@
 pip install kokoro-onnx soundfile
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
 python examples/podcast.py
 """
 
@@ -29,7 +29,7 @@ def random_pause(min_duration=0.5, max_duration=2.0):
     return silence
 
 
-kokoro = Kokoro("kokoro-v0_19.onnx", "voices.npz")
+kokoro = Kokoro("kokoro-v0_19.onnx", "voices.bin")
 
 audio = []
 

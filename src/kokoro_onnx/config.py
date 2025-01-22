@@ -40,7 +40,7 @@ class KoKoroConfig:
             error_msg += (
                 "\nYou can download the voices file using the following command:"
             )
-            error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz"
+            error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin"
             raise FileNotFoundError(error_msg)
 
         if not Path(self.model_path).exists():

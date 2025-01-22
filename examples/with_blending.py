@@ -2,7 +2,7 @@
 pip install kokoro-onnx soundfile
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
 python examples/with_blending.py
 """
 
@@ -10,7 +10,7 @@ import soundfile as sf
 from kokoro_onnx import Kokoro
 import numpy as np
 
-kokoro = Kokoro("kokoro-v0_19.onnx", "voices.npz")
+kokoro = Kokoro("kokoro-v0_19.onnx", "voices.bin")
 nicole: np.ndarray = kokoro.get_voice_style("af_nicole")
 michael: np.ndarray = kokoro.get_voice_style("am_michael")
 blend = np.add(nicole * (50 / 100), michael * (50 / 100))

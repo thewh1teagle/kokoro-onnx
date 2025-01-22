@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 pip install -U kokoro-onnx
 ```
 
-- You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx) and [`voices.npz`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz)
+- You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx) and [`voices.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin)
 - Please see examples
 
 <details>
@@ -39,7 +39,7 @@ uv add kokoro-onnx soundfile
 ```
 
 4. Paste the contents of [`examples/save.py`](https://github.com/thewh1teagle/kokoro-onnx/blob/main/examples/save.py) in `hello.py`
-5. Download the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.npz`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz) and place them in the same directory.
+5. Download the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin) and place them in the same directory.
 6. Run
 
 ```console

@@ -2,7 +2,7 @@
 pip install kokoro-onnx soundfile
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.npz
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
 python examples/with_language.py
 """
 
@@ -18,7 +18,7 @@ sentences = {
     "cmn": "你好，世界！",  # Mandarin Chinese
 }
 
-kokoro = Kokoro("kokoro-v0_19.onnx", "voices.npz")
+kokoro = Kokoro("kokoro-v0_19.onnx", "voices.bin")
 for lang, sentence in sentences.items():
     samples, sample_rate = kokoro.create(sentence, voice="af", speed=1.0, lang=lang)
     sf.write(f"{lang}.wav", samples, sample_rate)

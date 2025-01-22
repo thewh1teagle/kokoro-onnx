@@ -40,10 +40,11 @@ for name in names:
     r = requests.get(url)
     r.raise_for_status()  # Ensure the request was successful
     content = io.BytesIO(r.content)
-    data: np.ndarray = torch.load(content).numpy()
+    data: np.ndarray = torch.load(content, weights_only=True).numpy()
     voices[name] = data
 
 # Save all voices to a single .npz file
-npz_path = "voices.npz"
-np.savez(npz_path, **voices)
+npz_path = "voices.bin"
+with open(npz_path, "wb") as f:
+    np.savez(f, **voices)
 print(f"Created {npz_path}")
