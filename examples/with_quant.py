@@ -8,9 +8,9 @@ Usage:
    pip install kokoro-onnx sounddevice
 2. Download a model (choose one):
    - INT8 (88MB):
-     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro.int8.onnx
+     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.int8.onnx
    - FP16 (169MB):
-     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro.fp16.onnx
+     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.fp16.onnx
 3. Download voices.bin:
    wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
 4. Run example:
