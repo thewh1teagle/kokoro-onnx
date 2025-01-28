@@ -25,7 +25,7 @@ jobs:
       # https://github.com/crate-ci/typos/issues/1191
       - name: Install wget for Windows
         if: matrix.platform == 'windows-latest'
-        run: choco install wget --no-progress
+        run: winget install -e --id JernejSimoncic.Wget
 
       - name: test
         run: |
