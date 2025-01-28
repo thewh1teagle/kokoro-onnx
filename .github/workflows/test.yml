@@ -21,6 +21,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v5
+
+      # https://github.com/crate-ci/typos/issues/1191
+      - name: Install wget for Windows
+        if: matrix.platform == 'windows-latest'
+        run: choco install wget --no-progress
+
       - name: test
         run: |
           wget --progress=bar:force:noscroll https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx -O kokoro-v0_19.onnx
