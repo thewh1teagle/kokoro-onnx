@@ -14,7 +14,7 @@ jobs:
           - platform: "macos-14" # for Arm based macs (M1 and above).
           - platform: "macos-13" # for Intel based macs.
           - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64
-          - platform: "windows-latest" # Windows x86_64
+          - platform: "windows-2022" # Windows x86_64
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -25,7 +25,7 @@ jobs:
       # https://github.com/crate-ci/typos/issues/1191
       - name: Install wget for Windows
         if: matrix.platform == 'windows-latest'
-        run: winget install -e --id JernejSimoncic.Wget
+        run: choco install wget --no-progress
 
       - name: test
         run: |
