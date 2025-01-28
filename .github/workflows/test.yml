@@ -1,0 +1,28 @@
+name: test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-14" # for Arm based macs (M1 and above).
+          - platform: "macos-13" # for Intel based macs.
+          - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64
+          - platform: "windows-latest" # Windows x86_64
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+      - name: test
+        run: |
+          wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx -O kokoro-v0_19.onnx
+          wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin -O voices.bin
+          uv run examples/save.py
