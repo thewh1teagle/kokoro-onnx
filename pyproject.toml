@@ -25,10 +25,11 @@ Issues = "https://github.com/thewh1teagle/kokoro-onnx/issues"
 
 
 [project.optional-dependencies]
-# Windows/Linux gpu feature
+# Windows/Linux GPU feature
 # Install with kokoro-onnx[gpu]
 gpu = [
-    "onnxruntime-gpu>=1.20.1; sys_platform != 'darwin'", 
+    # onnxruntime-gpu is not available on Linux ARM or macOS
+    "onnxruntime-gpu>=1.20.1; platform_machine == 'x86_64' and sys_platform != 'darwin'",
 ]
 
 [build-system]
