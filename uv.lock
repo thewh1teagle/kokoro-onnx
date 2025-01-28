@@ -364,7 +364,7 @@ dependencies = [
 
 [package.optional-dependencies]
 gpu = [
-    { name = "onnxruntime-gpu", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'win32')" },
+    { name = "onnxruntime-gpu", marker = "platform_machine == 'x86_64' and sys_platform != 'darwin'" },
 ]
 
 [package.dev-dependencies]
@@ -382,7 +382,7 @@ requires-dist = [
     { name = "numba", specifier = ">=0.60.0" },
     { name = "numpy", specifier = ">=2.0.2" },
     { name = "onnxruntime", specifier = ">=1.20.1" },
-    { name = "onnxruntime-gpu", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'gpu') or (platform_machine == 'x86_64' and sys_platform == 'win32' and extra == 'gpu')", specifier = ">=1.20.1" },
+    { name = "onnxruntime-gpu", marker = "platform_machine == 'x86_64' and sys_platform != 'darwin' and extra == 'gpu'", specifier = ">=1.20.1" },
     { name = "phonemizer-fork", specifier = "==3.3.1" },
 ]
 
