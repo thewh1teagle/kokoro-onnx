@@ -14,6 +14,7 @@ jobs:
           - platform: "macos-14" # for Arm based macs (M1 and above).
           - platform: "macos-13" # for Intel based macs.
           - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64
+          - platform: "linux-arm" # Linux ARM
           - platform: "windows-2022" # Windows x86_64
 
     runs-on: ${{ matrix.platform }}
