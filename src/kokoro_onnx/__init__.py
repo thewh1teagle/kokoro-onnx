@@ -235,7 +235,7 @@ class Kokoro:
             yield chunk
 
     def get_voices(self) -> list[str]:
-        return list(self.voices.keys())
+        return list(sorted(self.voices.keys()))
 
     def get_languages(self) -> list[str]:
         return SUPPORTED_LANGUAGES

@@ -6,8 +6,8 @@ SUPPORTED_LANGUAGES = [
     "en-us",  # English
     "en-gb",  # English (British)
     "fr-fr",  # French
+    "it",  # Italian
     "ja",  # Japanese
-    "ko",  # Korean
     "cmn",  # Mandarin Chinese
 ]
 MAX_PHONEME_LENGTH = 510

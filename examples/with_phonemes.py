@@ -8,9 +8,13 @@ python examples/with_phonemes.py
 
 import sounddevice as sd
 from kokoro_onnx import Kokoro
+from kokoro_onnx.tokenizer import Tokenizer
 
+
+tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
-phonemes = "mˈʌsk sˈɛd ɪnðɪ ɑːktˈoʊbɚ twˈɛnti twˈɛnti θɹˈiː kˈɔːl."  # Musk said in the October 2023 call
+
+phonemes = tokenizer.phonemize("Hello world!", lang="en-US")
 samples, sample_rate = kokoro.create(
     "", phonemes=phonemes, voice="af_sarah", speed=1.0, lang="en-us"
 )
