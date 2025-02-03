@@ -82,9 +82,9 @@ class Kokoro:
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
         tokens = self.tokenizer.tokenize(phonemes)
-        assert len(tokens) <= MAX_PHONEME_LENGTH, (
-            f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
-        )
+        assert (
+            len(tokens) <= MAX_PHONEME_LENGTH
+        ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
 
         voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
@@ -152,9 +152,9 @@ class Kokoro:
         Create audio from text using the specified voice and speed.
         """
 
-        assert lang in SUPPORTED_LANGUAGES, (
-            f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
-        )
+        assert (
+            lang in SUPPORTED_LANGUAGES
+        ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
 
         if isinstance(voice, str):
@@ -194,9 +194,9 @@ class Kokoro:
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
         """
-        assert lang in SUPPORTED_LANGUAGES, (
-            f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
-        )
+        assert (
+            lang in SUPPORTED_LANGUAGES
+        ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
 
         if isinstance(voice, str):
