@@ -10,8 +10,9 @@
 # ///
 
 """
-Run this with:
-uv run examples/app.py
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+uv run app.py
 """
 
 import gradio as gr
@@ -23,7 +24,7 @@ tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 
-def speak(text: str, voice: str, language: str):
+def create(text: str, voice: str, language: str):
     phonemes = tokenizer.phonemize(text, lang=language)
     samples, sample_rate = kokoro.create(
         text="",
@@ -34,12 +35,12 @@ def speak(text: str, voice: str, language: str):
     return [(sample_rate, samples), phonemes]
 
 
-def create():
+def create_app():
     with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Roboto")])) as ui:
         text_input = gr.TextArea(
             label="Input Text",
             rtl=False,
-            value="Hello world!",
+            value="Kokoro TTS. Turning words into emotion, one voice at a time!",
         )
         language_input = gr.Dropdown(
             label="Language",
@@ -47,18 +48,18 @@ def create():
             choices=SUPPORTED_LANGUAGES,
         )
         voice_input = gr.Dropdown(
-            label="Voice", value="af_sarah", choices=sorted(kokoro.get_voices())
+            label="Voice", value="af_sky", choices=sorted(kokoro.get_voices())
         )
         submit_button = gr.Button("Create")
         phonemes_output = gr.Textbox(label="Phonemes")
         audio_output = gr.Audio()
         submit_button.click(
-            fn=speak,
+            fn=create,
             inputs=[text_input, voice_input, language_input],
             outputs=[audio_output, phonemes_output],
         )
     return ui
 
 
-ui = create()
+ui = create_app()
 ui.launch(debug=True)
