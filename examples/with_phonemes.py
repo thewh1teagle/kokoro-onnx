@@ -1,15 +1,15 @@
 """
 pip install kokoro-onnx sounddevice
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
 python examples/with_phonemes.py
 """
 
 import sounddevice as sd
 from kokoro_onnx import Kokoro
 
-kokoro = Kokoro("kokoro-v0_19.onnx", "voices.bin")
+kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 phonemes = "mˈʌsk sˈɛd ɪnðɪ ɑːktˈoʊbɚ twˈɛnti twˈɛnti θɹˈiː kˈɔːl."  # Musk said in the October 2023 call
 samples, sample_rate = kokoro.create(
     "", phonemes=phonemes, voice="af_sarah", speed=1.0, lang="en-us"

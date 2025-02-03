@@ -3,8 +3,8 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
 pip install kokoro-onnx sounddevice
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
 
 PHONEMIZER_ESPEAK_LIBRARY="/usr/local/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.1.dylib" python examples/with_espeak_lib.py
 """
@@ -15,8 +15,8 @@ from kokoro_onnx import Kokoro, EspeakConfig
 
 
 kokoro = Kokoro(
-    "kokoro-v0_19.onnx",
-    "voices.bin",
+    "kokoro-v1.0.onnx",
+    "voices-v1.0.bin",
     espeak_config=EspeakConfig(lib_path=os.getenv("PHONEMIZER_ESPEAK_LIBRARY")),
 )
 samples, sample_rate = kokoro.create(

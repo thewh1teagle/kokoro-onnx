@@ -3,8 +3,8 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
 pip install kokoro-onnx sounddevice
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
 python examples/with_stream.py
 """
 
@@ -27,7 +27,7 @@ There is a special alert for Kansas, urging people not to leave their homes: "Th
 
 
 async def main():
-    kokoro = Kokoro("kokoro-v0_19.onnx", "voices.bin")
+    kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
     stream = kokoro.create_stream(
         text,

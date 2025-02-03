@@ -30,7 +30,7 @@ jobs:
 
       - name: test
         run: |
-          wget --progress=bar:force:noscroll https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx -O kokoro-v0_19.onnx
-          wget --progress=bar:force:noscroll https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin -O voices.bin
+          wget --progress=bar:force:noscroll https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx -O kokoro-v1.0.onnx
+          wget --progress=bar:force:noscroll https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin -O voices-v1.0.bin
           uv run examples/save.py
         shell: bash

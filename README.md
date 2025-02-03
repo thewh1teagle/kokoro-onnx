@@ -2,7 +2,7 @@
 
 TTS with onnx runtime based on [Kokoro-TTS](https://huggingface.co/spaces/hexgrad/Kokoro-TTS)
 
-Pre release models of version 1.0 🎉 available [releases/model-files-v1.0](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0)
+🚀 Version 1.0 models are out now! 🎉
 
 https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 
@@ -10,7 +10,7 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 
 - Supports English (with French, Japanese, Korean, and Chinese coming soon)
 - Fast performance near real-time on macOS M1
-- Multiple voices, including whispering
+- Offer multiple voices
 - Lightweight: ~300MB (quantized: ~80MB)
 
 ## Setup
@@ -18,9 +18,6 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 ```console
 pip install -U kokoro-onnx
 ```
-
-- You also need [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx) and [`voices.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin)
-- Please see examples
 
 <details>
 
@@ -41,7 +38,7 @@ uv add kokoro-onnx soundfile
 ```
 
 4. Paste the contents of [`examples/save.py`](https://github.com/thewh1teagle/kokoro-onnx/blob/main/examples/save.py) in `hello.py`
-5. Download the files [`kokoro-v0_19.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx), and [`voices.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin) and place them in the same directory.
+5. Download the files [`kokoro-v1.0.onnx`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v1.0.onnx), and [`voices-v1.0.bin`](https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin) and place them in the same directory.
 6. Run
 
 ```console
@@ -60,7 +57,7 @@ See [examples](examples)
 
 ## Voices
 
-Available voices are `af`, `af_bella`, `af_nicole`, `af_sarah`, `af_sky`, `am_adam`, `am_michael`, `bf_emma`, `bf_isabella`, `bm_george`, `bm_lewis`
+See the latest information in [kokoro-onnx/releases](https://github.com/thewh1teagle/kokoro-onnx/releases)
 
 ## Contribute
 

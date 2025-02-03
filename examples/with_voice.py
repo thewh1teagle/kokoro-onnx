@@ -1,8 +1,8 @@
 """
 pip install kokoro-onnx soundfile
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
 python examples/with_voice.py
 """
 
@@ -11,7 +11,7 @@ import soundfile as sf
 from kokoro_onnx import Kokoro
 from kokoro_onnx.config import SAMPLE_RATE
 
-kokoro = Kokoro("kokoro-v1.0.onnx", "voices.bin")
+kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 created = []
 
 for voice in kokoro.get_voices():

@@ -38,7 +38,7 @@ for i, name in enumerate(names, 1):
     voices[name] = data
 
 # Save all voices to a single .npz file
-npz_path = "voices.bin"
+npz_path = "voices-v1.0.bin"
 with open(npz_path, "wb") as f:
     np.savez(f, **voices)
 print(f"Created {npz_path}")
