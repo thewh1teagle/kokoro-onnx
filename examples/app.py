@@ -10,6 +10,7 @@
 # ///
 
 """
+Run this with:
 uv run examples/app.py
 """
 
