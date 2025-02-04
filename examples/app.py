@@ -18,14 +18,20 @@ uv run app.py
 import gradio as gr
 from kokoro_onnx import Kokoro, SUPPORTED_LANGUAGES
 from kokoro_onnx.tokenizer import Tokenizer
-
+import numpy as np
 
 tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 
-def create(text: str, voice: str, language: str):
+def create(text: str, voice: str, language: str, blend_voice_name: str = None):
     phonemes = tokenizer.phonemize(text, lang=language)
+
+    # Blending
+    if blend_voice_name:
+        first_voice = kokoro.get_voice_style(voice)
+        second_voice = kokoro.get_voice_style(blend_voice_name)
+        voice = np.add(first_voice * (50 / 100), second_voice * (50 / 100))
     samples, sample_rate = kokoro.create(
         text="",
         phonemes=phonemes,
@@ -50,12 +56,17 @@ def create_app():
         voice_input = gr.Dropdown(
             label="Voice", value="af_sky", choices=sorted(kokoro.get_voices())
         )
+        blend_voice_input = gr.Dropdown(
+            label="Blend Voice (Optional)",
+            value=None,
+            choices=sorted(kokoro.get_voices()) + [None],
+        )
         submit_button = gr.Button("Create")
         phonemes_output = gr.Textbox(label="Phonemes")
         audio_output = gr.Audio()
         submit_button.click(
             fn=create,
-            inputs=[text_input, voice_input, language_input],
+            inputs=[text_input, voice_input, language_input, blend_voice_input],
             outputs=[audio_output, phonemes_output],
         )
     return ui
