@@ -122,7 +122,8 @@ class Kokoro:
 
             if part:
                 # If adding the part exceeds the max length, split into a new batch
-                if len(current_batch) + len(part) + 1 > MAX_PHONEME_LENGTH:
+                # TODO: make it more accurate
+                if len(current_batch) + len(part) + 1 >= MAX_PHONEME_LENGTH:
                     batched_phoenemes.append(current_batch.strip())
                     current_batch = part
                 else:
