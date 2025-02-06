@@ -19,18 +19,18 @@ import torch
 import re
 
 pattern = "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/{name}.pt"
-url = "https://huggingface.co/hexgrad/Kokoro-82M/tree/main/voices"
+url = "https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md"
 voices = {}
 
 names = re.findall(
-    'href="/hexgrad/Kokoro-82M/blob/main/voices/(.+).pt', requests.get(url).text
+    r'<td>(?:<strong>)?([a-z][fm]_[a-z]+)(?:</strong>)?</td>', requests.get(url).text
 )
 print(", ".join(names))
 
 count = len(names)
 for i, name in enumerate(names, 1):
     url = pattern.format(name=name)
-    print(f"Downloading {url} ({i}/{count})")
+    print(f"Downloading ({i}/{count}): {name} {url}")
     r = requests.get(url)
     r.raise_for_status()  # Ensure the request was successful
     content = io.BytesIO(r.content)
