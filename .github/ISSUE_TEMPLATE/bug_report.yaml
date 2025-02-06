@@ -46,6 +46,7 @@ body:
       label: Package version
       description: |
         Run `uv pip show kokoro-onnx` (omit uv if needed)
+      placeholder: eg. 0.4.0
   - type: textarea
     id: logs
     attributes:
