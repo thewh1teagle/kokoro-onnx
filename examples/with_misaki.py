@@ -1,13 +1,20 @@
 """
 Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
-uv venv --seed -p 3.11
-source .venv/bin/activate
-pip install kokoro-onnx sounddevice 'misaki[en]'
+1. Prepare virtual environment
+    uv venv --seed -p 3.11
+    source .venv/bin/activate
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
-python examples/with_misaki.py
+2. Install packages
+    Please read carefully https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
+    pip install kokoro-onnx sounddevice 'misaki[en]'
+
+3. Download models
+    wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+    wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+
+4. Run
+    python examples/with_misaki.py
 """
 
 import sounddevice as sd
