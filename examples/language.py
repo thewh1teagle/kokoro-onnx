@@ -13,7 +13,7 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
 
 4. Run
-    python examples/with_misaki.py
+    python examples/language.py
     
 Please read carefully https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
 To use other languages install misaki with the specific language. Example: pip install misaki[ko] (Korean). And change the import. Example: from misaki.ko import KOG2P

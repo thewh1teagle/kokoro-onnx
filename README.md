@@ -59,7 +59,7 @@ See [examples](examples)
 
 See the latest voices and languages in [Kokoro-82M/VOICES.md](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md)
 
-Note: It's recommend to use misaki g2p package from v1.0, see [examples/with_misaki.py](examples/with_misaki.py)
+Note: It's recommend to use misaki g2p package from v1.0, see [examples/language.py](examples/language.py)
 
 ## Contribute
 
