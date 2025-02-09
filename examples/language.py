@@ -23,7 +23,7 @@ import sounddevice as sd
 from kokoro_onnx import Kokoro
 from misaki import en, espeak
 
-# Misaki g2p with espeak-ng fallback
+# Misaki G2P with espeak-ng fallback
 fallback = espeak.EspeakFallback(british=False)
 g2p = en.G2P(trf=False, british=False, fallback=fallback)
 
@@ -34,6 +34,7 @@ kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 text = "[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/) models."
 phonemes, _ = g2p(text)
 
+# Create
 samples, sample_rate = kokoro.create(phonemes, voice="af_sarah", is_phonemes=True)
 
 # Play
