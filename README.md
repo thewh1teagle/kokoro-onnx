@@ -8,7 +8,7 @@ https://github.com/user-attachments/assets/00ca06e8-bbbd-4e08-bfb7-23c0acb10ef9
 
 ## Features
 
-- Supports English (with French, Japanese, Korean, and Chinese coming soon)
+- Supports multiple languages 
 - Fast performance near real-time on macOS M1
 - Offer multiple voices
 - Lightweight: ~300MB (quantized: ~80MB)
