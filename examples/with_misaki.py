@@ -12,15 +12,25 @@ python examples/with_misaki.py
 
 import sounddevice as sd
 from kokoro_onnx import Kokoro
-from misaki import en
+from misaki import en, espeak
 
-g2p = en.G2P(trf=False, british=False, fallback=None)
+# Misaki g2p with espeak-ng fallback
+fallback = espeak.EspeakFallback(british=False)
+g2p = en.G2P(trf=False, british=False, fallback=fallback)
+
+# Kokoro
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
-text = "[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/) models."
+
+# Phonemize
+text = '[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/) models.'
 phonemes, _ = g2p(text)
+
+# Create
 samples, sample_rate = kokoro.create(
     text="", phonemes=phonemes, voice="af_sarah", speed=1.0, lang="en-us"
 )
+
+# Play
 print("Playing audio...")
 sd.play(samples, sample_rate)
 sd.wait()
