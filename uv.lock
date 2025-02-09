@@ -350,7 +350,7 @@ wheels = [
 
 [[package]]
 name = "kokoro-onnx"
-version = "0.4.0"
+version = "0.4.2"
 source = { editable = "." }
 dependencies = [
     { name = "colorlog" },

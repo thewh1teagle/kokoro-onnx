@@ -145,7 +145,7 @@ class Kokoro:
         voice: str | NDArray[np.float32],
         speed: float = 1.0,
         lang: str = "en-us",
-        phonemes: str | None = None,
+        is_phonemes: bool = False,
         trim: bool = True,
     ) -> tuple[NDArray[np.float32], int]:
         """
@@ -158,7 +158,9 @@ class Kokoro:
             voice = self.get_voice_style(voice)
 
         start_t = time.time()
-        if not phonemes:
+        if is_phonemes:
+            phonemes = text
+        else:
             phonemes = self.tokenizer.phonemize(text, lang)
         # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
         batched_phoenemes = self._split_phonemes(phonemes)
@@ -184,7 +186,7 @@ class Kokoro:
         voice: str | NDArray[np.float32],
         speed: float = 1.0,
         lang: str = "en-us",
-        phonemes: str | None = None,
+        is_phonemes: bool = False,
         trim: bool = True,
     ) -> AsyncGenerator[tuple[NDArray[np.float32], int], None]:
         """
@@ -196,7 +198,9 @@ class Kokoro:
             assert voice in self.voices, f"Voice {voice} not found in available voices"
             voice = self.get_voice_style(voice)
 
-        if not phonemes:
+        if is_phonemes:
+            phonemes = text
+        else:
             phonemes = self.tokenizer.phonemize(text, lang)
 
         batched_phonemes = self._split_phonemes(phonemes)

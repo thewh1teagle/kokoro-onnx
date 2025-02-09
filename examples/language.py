@@ -14,7 +14,7 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
 4. Run
     python examples/language.py
-    
+
 Please read carefully https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
 To use other languages install misaki with the specific language. Example: pip install misaki[ko] (Korean). And change the import. Example: from misaki.ko import KOG2P
 """
@@ -31,11 +31,10 @@ g2p = en.G2P(trf=False, british=False, fallback=fallback)
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 # Phonemize
-text = '[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/) models.'
+text = "[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/) models."
 phonemes, _ = g2p(text)
 
-# Create
-samples, sample_rate = kokoro.create(text="", phonemes=phonemes, voice="af_sarah")
+samples, sample_rate = kokoro.create(phonemes, voice="af_sarah", is_phonemes=True)
 
 # Play
 print("Playing audio...")

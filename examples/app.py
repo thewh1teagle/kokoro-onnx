@@ -24,9 +24,8 @@ tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 
-SUPPORTED_LANGUAGES = [
-    'en-us'
-]
+SUPPORTED_LANGUAGES = ["en-us"]
+
 
 def create(text: str, voice: str, language: str, blend_voice_name: str = None):
     phonemes = tokenizer.phonemize(text, lang=language)
@@ -37,10 +36,7 @@ def create(text: str, voice: str, language: str, blend_voice_name: str = None):
         second_voice = kokoro.get_voice_style(blend_voice_name)
         voice = np.add(first_voice * (50 / 100), second_voice * (50 / 100))
     samples, sample_rate = kokoro.create(
-        text="",
-        phonemes=phonemes,
-        voice=voice,
-        speed=1.0,
+        phonemes, voice=voice, speed=1.0, is_phonemes=True
     )
     return [(sample_rate, samples), phonemes]
 
