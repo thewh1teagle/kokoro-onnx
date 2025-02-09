@@ -57,7 +57,7 @@ See [examples](examples)
 
 ## Voices
 
-See the latest information in [kokoro-onnx/releases](https://github.com/thewh1teagle/kokoro-onnx/releases)
+See the latest information in [Kokoro-82M/VOICES.md](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md)
 
 ## Contribute
 
