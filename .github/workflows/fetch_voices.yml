@@ -20,7 +20,7 @@ jobs:
         run: |
           uv run scripts/fetch_voices.py
           latestTag=$(gh release list --json isPrerelease,tagName --jq 'map(select(.isPrerelease)) | first | .tagName')
-          gh release upload $latestTag voices-v1.0.bin
+          gh release upload $latestTag voices-v1.0.bin --clobber
         env:
           GH_TOKEN: ${{ github.token }}
 
