@@ -1,15 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
 
-# https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md
-SUPPORTED_LANGUAGES = [
-    "en-us",  # English
-    "en-gb",  # English (British)
-    "fr-fr",  # French
-    "it",  # Italian
-    "ja",  # Japanese
-    "cmn",  # Mandarin Chinese
-]
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
 

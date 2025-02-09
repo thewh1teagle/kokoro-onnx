@@ -6,7 +6,6 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
     source .venv/bin/activate
 
 2. Install packages
-    Please read carefully https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
     pip install kokoro-onnx sounddevice 'misaki[en]'
 
 3. Download models
@@ -15,6 +14,9 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
 4. Run
     python examples/with_misaki.py
+    
+Please read carefully https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
+To use other languages install misaki with the specific language. Example: pip install misaki[ko] (Korean). And change the import. Example: from misaki.ko import KOG2P
 """
 
 import sounddevice as sd
@@ -33,9 +35,7 @@ text = '[Misaki](/misˈɑki/) is a G2P engine designed for [Kokoro](/kˈOkəɹO/
 phonemes, _ = g2p(text)
 
 # Create
-samples, sample_rate = kokoro.create(
-    text="", phonemes=phonemes, voice="af_sarah", speed=1.0, lang="en-us"
-)
+samples, sample_rate = kokoro.create(text="", phonemes=phonemes, voice="af_sarah")
 
 # Play
 print("Playing audio...")

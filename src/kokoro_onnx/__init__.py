@@ -16,7 +16,6 @@ from numpy.typing import NDArray
 from .config import (
     MAX_PHONEME_LENGTH,
     SAMPLE_RATE,
-    SUPPORTED_LANGUAGES,
     EspeakConfig,
     KoKoroConfig,
 )
@@ -152,10 +151,6 @@ class Kokoro:
         """
         Create audio from text using the specified voice and speed.
         """
-
-        assert (
-            lang in SUPPORTED_LANGUAGES
-        ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
 
         if isinstance(voice, str):
@@ -195,9 +190,6 @@ class Kokoro:
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
         """
-        assert (
-            lang in SUPPORTED_LANGUAGES
-        ), f"Language must be either {', '.join(SUPPORTED_LANGUAGES)}. Got {lang}"
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
 
         if isinstance(voice, str):
@@ -237,6 +229,3 @@ class Kokoro:
 
     def get_voices(self) -> list[str]:
         return list(sorted(self.voices.keys()))
-
-    def get_languages(self) -> list[str]:
-        return SUPPORTED_LANGUAGES
