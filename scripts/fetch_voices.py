@@ -6,31 +6,32 @@
 #     "torch==2.5.1",
 # ]
 # ///
-# declaring requests is necessary for running
 """
 Run this file via:
 uv run scripts/fetch_voices.py
+
+See voices in
+https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
 """
 
 import io
 import numpy as np
 import requests
 import torch
-import re
+import os
 
-pattern = "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/{name}.pt"
-url = "https://huggingface.co/hexgrad/Kokoro-82M/tree/main/voices"
-voices = {}
-
-names = re.findall(
-    'href="/hexgrad/Kokoro-82M/blob/main/voices/(.+).pt', requests.get(url).text
-)
-print(", ".join(names))
-
+# Extract voice names
+voice_url = "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/{name}.pt"
+api_url = "https://huggingface.co/api/models/hexgrad/Kokoro-82M/tree/main/voices"
+names = [voice["path"][7:-3] for voice in requests.get(api_url).json()]
 count = len(names)
+
+# Extract voice files
+print(f"Found {count} voices")
+voices = {}
 for i, name in enumerate(names, 1):
-    url = pattern.format(name=name)
-    print(f"Downloading {url} ({i}/{count})")
+    url = voice_url.format(name=name)
+    print(f"Downloading {name} from {url} ({i}/{count})")
     r = requests.get(url)
     r.raise_for_status()  # Ensure the request was successful
     content = io.BytesIO(r.content)
@@ -41,4 +42,6 @@ for i, name in enumerate(names, 1):
 npz_path = "voices-v1.0.bin"
 with open(npz_path, "wb") as f:
     np.savez(f, **voices)
-print(f"Created {npz_path}")
+
+mb_size = os.path.getsize(npz_path) // 1000 // 1000
+print(f"Created {npz_path} ({mb_size}MB)")

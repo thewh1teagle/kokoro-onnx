@@ -1,0 +1,24 @@
+name: fetch voices
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: fetch voices
+        run: |
+          uv run scripts/fetch_voices.py
+          latestTag=$(git describe --tags --abbrev=0)
+          gh release upload $latestTag voices-v1.0.bin
+        shell: bash
