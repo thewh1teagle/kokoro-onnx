@@ -19,6 +19,6 @@ jobs:
       - name: fetch voices
         run: |
           uv run scripts/fetch_voices.py
-          latestTag=$(git describe --tags --abbrev=0)
+          latestTag=$(gh release list --json isPrerelease,tagName --jq 'map(select(.isPrerelease)) | first | .tagName')
           gh release upload $latestTag voices-v1.0.bin
         shell: bash
