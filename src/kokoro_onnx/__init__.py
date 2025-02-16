@@ -13,14 +13,9 @@ import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
 
-from .config import (
-    MAX_PHONEME_LENGTH,
-    SAMPLE_RATE,
-    EspeakConfig,
-    KoKoroConfig,
-)
+from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
-from .tokenizer import Tokenizer
+from .tokenizer import Tokenizer, TokenizerFactory
 
 
 class Kokoro:
@@ -53,7 +48,7 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: np.ndarray = np.load(voices_path)
-        self.tokenizer = Tokenizer(espeak_config)
+        self.espeak_config = espeak_config
 
     @classmethod
     def from_session(
@@ -67,11 +62,15 @@ class Kokoro:
         instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
         instance.config.validate()
         instance.voices = np.load(voices_path)
-        instance.tokenizer = Tokenizer(espeak_config)
+        instance.espeak_config = espeak_config
         return instance
 
     def _create_audio(
-        self, phonemes: str, voice: NDArray[np.float32], speed: float
+        self,
+        tokenizer: Tokenizer,
+        phonemes: str,
+        voice: NDArray[np.float32],
+        speed: float,
     ) -> tuple[NDArray[np.float32], int]:
         log.debug(f"Phonemes: {phonemes}")
         if len(phonemes) > MAX_PHONEME_LENGTH:
@@ -80,7 +79,7 @@ class Kokoro:
             )
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
-        tokens = self.tokenizer.tokenize(phonemes)
+        tokens = tokenizer.tokenize(phonemes)
         assert (
             len(tokens) <= MAX_PHONEME_LENGTH
         ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
@@ -156,12 +155,12 @@ class Kokoro:
         if isinstance(voice, str):
             assert voice in self.voices, f"Voice {voice} not found in available voices"
             voice = self.get_voice_style(voice)
-
+        tokenizer = TokenizerFactory().create(lang)
         start_t = time.time()
         if is_phonemes:
             phonemes = text
         else:
-            phonemes = self.tokenizer.phonemize(text, lang)
+            phonemes = tokenizer.phonemize(text, lang)
         # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
         batched_phoenemes = self._split_phonemes(phonemes)
 
@@ -170,7 +169,7 @@ class Kokoro:
             f"Creating audio for {len(batched_phoenemes)} batches for {len(phonemes)} phonemes"
         )
         for phonemes in batched_phoenemes:
-            audio_part, _ = self._create_audio(phonemes, voice, speed)
+            audio_part, _ = self._create_audio(tokenizer, phonemes, voice, speed)
             if trim:
                 # Trim leading and trailing silence for a more natural sound concatenation
                 # (initial ~2s, subsequent ~0.02s)
@@ -197,11 +196,11 @@ class Kokoro:
         if isinstance(voice, str):
             assert voice in self.voices, f"Voice {voice} not found in available voices"
             voice = self.get_voice_style(voice)
-
+        tokenizer = TokenizerFactory().create(lang)
         if is_phonemes:
             phonemes = text
         else:
-            phonemes = self.tokenizer.phonemize(text, lang)
+            phonemes = tokenizer.phonemize(text, lang)
 
         batched_phonemes = self._split_phonemes(phonemes)
         queue: asyncio.Queue[tuple[NDArray[np.float32], int] | None] = asyncio.Queue()
@@ -212,7 +211,7 @@ class Kokoro:
                 loop = asyncio.get_event_loop()
                 # Execute in separate thread since it's blocking operation
                 audio_part, sample_rate = await loop.run_in_executor(
-                    None, self._create_audio, phonemes, voice, speed
+                    None, self._create_audio, tokenizer, phonemes, voice, speed
                 )
                 if trim:
                     # Trim leading and trailing silence for a more natural sound concatenation

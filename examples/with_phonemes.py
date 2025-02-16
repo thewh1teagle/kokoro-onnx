@@ -7,11 +7,11 @@ python examples/with_phonemes.py
 """
 
 import sounddevice as sd
+
 from kokoro_onnx import Kokoro
-from kokoro_onnx.tokenizer import Tokenizer
+from kokoro_onnx.tokenizer import TokenizerFactory
 
-
-tokenizer = Tokenizer()
+tokenizer = TokenizerFactory.create("en-us")
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 phonemes = tokenizer.phonemize("Hello world!", lang="en-US")

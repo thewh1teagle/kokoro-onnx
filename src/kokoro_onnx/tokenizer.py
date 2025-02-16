@@ -1,13 +1,15 @@
+import ctypes
+import os
+import platform
 import re
+import sys
+
+import espeakng_loader
 import phonemizer
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
-import espeakng_loader
+
 from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
 from .log import log
-import ctypes
-import platform
-import sys
-import os
 
 
 class Tokenizer:
@@ -50,8 +52,59 @@ class Tokenizer:
         EspeakWrapper.set_data_path(espeak_config.data_path)
         EspeakWrapper.set_library(espeak_config.lib_path)
 
-    @staticmethod
-    def split_num(num):
+    def _normalize_text(self, text) -> str:
+        # remove leading and trailing whitespace and empty lines
+        text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
+        # replace curly quotes with straight quotes
+        text = text.replace(chr(8216), "'").replace(chr(8217), "'")
+        # replace curly double quotes with straight double quotes
+        text = text.replace("«", chr(8220)).replace("»", chr(8221))
+        # replace other curly quotes with straight double quotes
+        text = text.replace(chr(8220), '"').replace(chr(8221), '"')
+        # replace other curly quotes with straight double quotes
+        text = text.replace("(", "«").replace(")", "»")
+        for a, b in zip("、。！，：；？", ",.!,:;?"):
+            text = text.replace(a, b + " ")
+        # replace ellipsis with three periods
+        text = re.sub(r"[^\S \n]", " ", text)
+        # replace multiple spaces with a single space
+        text = re.sub(r"  +", " ", text)
+        # replace multiple newlines with a single newline
+        text = re.sub(r"(?<=\n) +(?=\n)", "", text)
+
+        text = re.sub(
+            r"(?:[A-Za-z]\.){2,} [a-z]", lambda m: m.group().replace(".", "-"), text
+        )
+        return text.strip()
+
+    def tokenize(self, phonemes):
+        if len(phonemes) > MAX_PHONEME_LENGTH:
+            raise ValueError(
+                f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
+            )
+        return [i for i in map(VOCAB.get, phonemes) if i is not None]
+
+    def phonemize(self, text, lang, norm=True) -> str:
+        if norm:
+            text = self._normalize_text(text)
+
+        phonemes = phonemizer.phonemize(
+            text, lang, preserve_punctuation=True, with_stress=True
+        )
+
+        # https://en.wiktionary.org/wiki/kokoro#English
+        phonemes = phonemes.replace("kəkˈoːɹoʊ", "kˈoʊkəɹoʊ").replace(
+            "kəkˈɔːɹəʊ", "kˈəʊkəɹəʊ"
+        )
+
+        phonemes = re.sub(r' z(?=[;:,.!?¡¿—…"«»“” ]|$)', "z", phonemes)
+        phonemes = "".join(filter(lambda p: p in VOCAB, phonemes))
+        return phonemes.strip()
+
+
+class EnglishTokenizer(Tokenizer):
+
+    def _split_num(self, num):
         num = num.group()
         if "." in num:
             return num
@@ -74,8 +127,7 @@ class Tokenizer:
                 return f"{left} oh {right}{s}"
         return f"{left} {right}{s}"
 
-    @staticmethod
-    def flip_money(m):
+    def _flip_money(self, m):
         m = m.group()
         bill = "dollar" if m[0] == "$" else "pound"
         if m[-1].isalpha():
@@ -93,49 +145,18 @@ class Tokenizer:
         )
         return f"{b} {bill}{s} and {c} {coins}"
 
-    @staticmethod
-    def point_num(num) -> str:
+    def _point_num(self, num) -> str:
         a, b = num.group().split(".")
         return " point ".join([a, " ".join(b)])
 
-    @staticmethod
-    def normalize_text(text) -> str:
-        # remove leading and trailing whitespace and empty lines
-        text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
-        # replace curly quotes with straight quotes
-        text = text.replace(chr(8216), "'").replace(chr(8217), "'")
-        # replace curly double quotes with straight double quotes
-        text = text.replace("«", chr(8220)).replace("»", chr(8221))
-        # replace other curly quotes with straight double quotes
-        text = text.replace(chr(8220), '"').replace(chr(8221), '"')
-        # replace other curly quotes with straight double quotes
-        text = text.replace("(", "«").replace(")", "»")
-        for a, b in zip("、。！，：；？", ",.!,:;?"):
-            text = text.replace(a, b + " ")
-        # replace ellipsis with three periods
-        text = re.sub(r"[^\S \n]", " ", text)
-        # replace multiple spaces with a single space
-        text = re.sub(r"  +", " ", text)
-        # replace multiple newlines with a single newline
-        text = re.sub(r"(?<=\n) +(?=\n)", "", text)
+    def _normalize_text(self, text) -> str:
+        super()._normalize_text(text)
         text = re.sub(r"\bD[Rr]\.(?= [A-Z])", "Doctor", text)
         text = re.sub(r"\b(?:Mr\.|MR\.(?= [A-Z]))", "Mister", text)
         text = re.sub(r"\b(?:Ms\.|MS\.(?= [A-Z]))", "Miss", text)
         text = re.sub(r"\b(?:Mrs\.|MRS\.(?= [A-Z]))", "Mrs", text)
         text = re.sub(r"\betc\.(?! [A-Z])", "etc", text)
         text = re.sub(r"(?i)\b(y)eah?\b", r"\1e'a", text)
-        text = re.sub(
-            r"\d*\.\d+|\b\d{4}s?\b|(?<!:)\b(?:[1-9]|1[0-2]):[0-5]\d\b(?!:)",
-            Tokenizer.split_num,
-            text,
-        )
-        text = re.sub(r"(?<=\d),(?=\d)", "", text)
-        text = re.sub(
-            r"(?i)[$£]\d+(?:\.\d+)?(?: hundred| thousand| (?:[bm]|tr)illion)*\b|[$£]\d+\.\d\d?\b",
-            Tokenizer.flip_money,
-            text,
-        )
-        text = re.sub(r"\d*\.\d+", Tokenizer.point_num, text)
         text = re.sub(r"(?<=\d)-(?=\d)", " to ", text)
         text = re.sub(r"(?<=\d)S", " S", text)
         text = re.sub(r"(?<=[BCDFGHJ-NP-TV-Z])'?s\b", "'S", text)
@@ -144,30 +165,26 @@ class Tokenizer:
             r"(?:[A-Za-z]\.){2,} [a-z]", lambda m: m.group().replace(".", "-"), text
         )
         text = re.sub(r"(?i)(?<=[A-Z])\.(?=[A-Z])", "-", text)
+        text = re.sub(
+            r"\d*\.\d+|\b\d{4}s?\b|(?<!:)\b(?:[1-9]|1[0-2]):[0-5]\d\b(?!:)",
+            self._split_num,
+            text,
+        )
+        text = re.sub(r"(?<=\d),(?=\d)", "", text)
+        text = re.sub(
+            r"(?i)[$£]\d+(?:\.\d+)?(?: hundred| thousand| (?:[bm]|tr)illion)*\b|[$£]\d+\.\d\d?\b",
+            self._flip_money,
+            text,
+        )
+        text = re.sub(r"\d*\.\d+", self._point_num, text)
         return text.strip()
 
-    def tokenize(self, phonemes):
-        if len(phonemes) > MAX_PHONEME_LENGTH:
-            raise ValueError(
-                f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
-            )
-        return [i for i in map(VOCAB.get, phonemes) if i is not None]
-
-    def phonemize(self, text, lang="en-us", norm=True) -> str:
+    def phonemize(self, text, lang, norm=True) -> str:
         """
         lang can be 'en-us' or 'en-gb'
         """
-        if norm:
-            text = Tokenizer.normalize_text(text)
+        phonemes = super().phonemize(text, lang, norm)
 
-        phonemes = phonemizer.phonemize(
-            text, lang, preserve_punctuation=True, with_stress=True
-        )
-
-        # https://en.wiktionary.org/wiki/kokoro#English
-        phonemes = phonemes.replace("kəkˈoːɹoʊ", "kˈoʊkəɹoʊ").replace(
-            "kəkˈɔːɹəʊ", "kˈəʊkəɹəʊ"
-        )
         phonemes = (
             phonemes.replace("ʲ", "j")
             .replace("r", "ɹ")
@@ -180,3 +197,12 @@ class Tokenizer:
             phonemes = re.sub(r"(?<=nˈaɪn)ti(?!ː)", "di", phonemes)
         phonemes = "".join(filter(lambda p: p in VOCAB, phonemes))
         return phonemes.strip()
+
+
+class TokenizerFactory:
+    @staticmethod
+    def create(lang: str) -> Tokenizer:
+        print(f"Creating a tokenizer for language {lang}")
+        if lang == "en-us" or lang == "en-gb":
+            return EnglishTokenizer()
+        return Tokenizer()
