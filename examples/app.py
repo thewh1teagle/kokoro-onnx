@@ -16,11 +16,12 @@ uv run examples/app.py
 """
 
 import gradio as gr
-from kokoro_onnx import Kokoro
-from kokoro_onnx.tokenizer import Tokenizer
 import numpy as np
 
-tokenizer = Tokenizer()
+from kokoro_onnx import Kokoro
+from kokoro_onnx.tokenizer import Tokenizer, TokenizerFactory
+
+tokenizer: Tokenizer = None
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
 
@@ -28,6 +29,7 @@ SUPPORTED_LANGUAGES = ["en-us"]
 
 
 def create(text: str, voice: str, language: str, blend_voice_name: str = None):
+    tokenizer = TokenizerFactory.create(language)
     phonemes = tokenizer.phonemize(text, lang=language)
 
     # Blending
