@@ -8,7 +8,6 @@ import re
 import time
 from collections.abc import AsyncGenerator
 
-import librosa
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
@@ -21,6 +20,7 @@ from .config import (
 )
 from .log import log
 from .tokenizer import Tokenizer
+from .trim import trim as trim_audio
 
 
 class Kokoro:
@@ -174,7 +174,7 @@ class Kokoro:
             if trim:
                 # Trim leading and trailing silence for a more natural sound concatenation
                 # (initial ~2s, subsequent ~0.02s)
-                audio_part, _ = librosa.effects.trim(audio_part)
+                audio_part, _ = trim_audio(audio_part)
             audio.append(audio_part)
         audio = np.concatenate(audio)
         log.debug(f"Created audio in {time.time() - start_t:.2f}s")
@@ -217,7 +217,7 @@ class Kokoro:
                 if trim:
                     # Trim leading and trailing silence for a more natural sound concatenation
                     # (initial ~2s, subsequent ~0.02s)
-                    audio_part, _ = librosa.effects.trim(audio_part)
+                    audio_part, _ = trim_audio(audio_part)
                 log.debug(f"Processed chunk {i} of stream")
                 await queue.put((audio_part, sample_rate))
             await queue.put(None)  # Signal the end of the stream
