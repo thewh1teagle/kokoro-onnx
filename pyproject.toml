@@ -1,12 +1,12 @@
 [project]
 name = "kokoro-onnx"
-version = "0.4.3"
+version = "0.4.4"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.9,<3.13" # librosa -> llvmlite have no support for python > 3.12. 
+requires-python = ">=3.9"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
@@ -19,7 +19,6 @@ dependencies = [
 Homepage = "https://github.com/thewh1teagle/kokoro-onnx"
 Repository = "https://github.com/thewh1teagle/kokoro-onnx"
 Issues = "https://github.com/thewh1teagle/kokoro-onnx/issues"
-
 
 
 [project.optional-dependencies]
