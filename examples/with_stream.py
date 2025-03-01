@@ -1,7 +1,7 @@
 """
 Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
-pip install kokoro-onnx sounddevice
+pip install -U kokoro-onnx sounddevice
 
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
 wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin

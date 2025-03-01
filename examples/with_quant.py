@@ -5,7 +5,7 @@ Usage:
 
 1. Install dependencies:
    sudo apt-get install portaudio19-dev
-   pip install kokoro-onnx sounddevice
+   pip install -U kokoro-onnx sounddevice
 2. Download a model (choose one):
    - INT8 (88MB):
      wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.int8.onnx

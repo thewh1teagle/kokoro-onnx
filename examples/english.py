@@ -11,7 +11,7 @@ Usage:
 4. Run
     uv venv --seed -p 3.12
     source .venv/bin/activate
-    uv pip install kokoro-onnx==0.4.4 soundfile==0.13.1 'misaki[en]==0.8.4'
+    uv pip install -U kokoro-onnx==0.4.4 soundfile==0.13.1 'misaki[en]==0.8.4'
     uv run main.py
 
 For other languages read https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
