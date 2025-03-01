@@ -34,9 +34,8 @@ class KoKoroConfig:
         if not Path(self.model_path).exists():
             error_msg = f"Model file not found at {self.model_path}"
             error_msg += (
-                "\nYou can download the model file using the following command:"
+                "\nYou can download the model file from https://github.com/thewh1teagle/kokoro-onnx/releases"
             )
-            error_msg += "\nwget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx"
             raise FileNotFoundError(error_msg)
 
 

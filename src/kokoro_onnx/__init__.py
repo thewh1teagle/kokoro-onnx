@@ -80,19 +80,30 @@ class Kokoro:
             )
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
-        tokens = self.tokenizer.tokenize(phonemes)
+        tokens = np.array(self.tokenizer.tokenize(phonemes), dtype=np.int64)
         assert (
             len(tokens) <= MAX_PHONEME_LENGTH
         ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
 
         voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
-
+        if 'input_ids' in [i.name for i in self.sess.get_inputs()]:
+            # Newer export versions
+            inputs = {
+                'input_ids': tokens,
+                'style': np.array(voice, dtype=np.float32),
+                'speed': np.array([speed], dtype=np.int32)
+            }
+        else:
+            inputs = {
+                'tokens': tokens,
+                'style': voice,
+                'speed': np.ones(1, dtype=np.float32) * speed
+            }
+        
         audio = self.sess.run(
             None,
-            dict(
-                tokens=tokens, style=voice, speed=np.ones(1, dtype=np.float32) * speed
-            ),
+            inputs
         )[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
