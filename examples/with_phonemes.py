@@ -14,10 +14,8 @@ from kokoro_onnx.tokenizer import Tokenizer
 tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 
-phonemes = tokenizer.phonemize("Hello world!", lang="en-US")
-samples, sample_rate = kokoro.create(
-    phonemes, voice="af_sarah", speed=1.0, lang="en-us", is_phonemes=True
-)
+phonemes = tokenizer.phonemize("Hello world!")
+samples, sample_rate = kokoro.create(phonemes, voice="af_heart", is_phonemes=True)
 print("Playing audio...")
 sd.play(samples, sample_rate)
 sd.wait()
