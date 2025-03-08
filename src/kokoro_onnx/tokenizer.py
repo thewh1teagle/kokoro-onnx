@@ -2,7 +2,7 @@ import re
 import phonemizer
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
 import espeakng_loader
-from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
+from .config import MAX_PHONEME_LENGTH, VOCAB, VOCAB_ZH, EspeakConfig
 from .log import log
 import ctypes
 import platform
@@ -11,7 +11,7 @@ import os
 
 
 class Tokenizer:
-    def __init__(self, espeak_config: EspeakConfig | None = None):
+    def __init__(self, espeak_config: EspeakConfig | None = None, version: str = "1.0"):
         if not espeak_config:
             espeak_config = EspeakConfig()
         if not espeak_config.data_path:
@@ -49,6 +49,7 @@ class Tokenizer:
 
         EspeakWrapper.set_data_path(espeak_config.data_path)
         EspeakWrapper.set_library(espeak_config.lib_path)
+        self.version = version
 
     @staticmethod
     def split_num(num):
@@ -151,7 +152,10 @@ class Tokenizer:
             raise ValueError(
                 f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
             )
-        return [i for i in map(VOCAB.get, phonemes) if i is not None]
+        if self.version == "1.1":
+            return [i for i in map(VOCAB_ZH.get, phonemes) if i is not None]
+        else:
+            return [i for i in map(VOCAB.get, phonemes) if i is not None]
 
     def phonemize(self, text, lang="en-us", norm=True) -> str:
         """
