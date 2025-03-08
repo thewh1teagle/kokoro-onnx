@@ -29,6 +29,7 @@ class Kokoro:
         model_path: str,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
+        version: str = "1.0",
     ):
         # Show useful information for bug reports
         log.debug(
@@ -53,7 +54,7 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: np.ndarray = np.load(voices_path)
-        self.tokenizer = Tokenizer(espeak_config)
+        self.tokenizer = Tokenizer(espeak_config, version)
 
     @classmethod
     def from_session(

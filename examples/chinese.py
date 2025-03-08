@@ -21,11 +21,13 @@ from kokoro_onnx import Kokoro
 from misaki import zh
 
 # Misaki G2P with espeak-ng fallback
-g2p = zh.ZHG2P()
+g2p = zh.ZHG2P(version = '1.1')
 
 text = "千里之行，始于足下。"
-voice = "af_maple"
-kokoro = Kokoro("kokoro-v1.1-zh.onnx", "voices-v1.1-zh.bin")
+voice = "zf_001"
+kokoro = Kokoro("kokoro-onnx/model/kokoro-v1.1-zh.onnx", 
+                "kokoro-onnx/model/voices-v1.1-zh.bin", 
+                version="1.1")
 phonemes, _ = g2p(text)
 samples, sample_rate = kokoro.create(phonemes, voice=voice, speed=1.0, is_phonemes=True)
 sf.write("audio.wav", samples, sample_rate)
