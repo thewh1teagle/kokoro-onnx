@@ -45,4 +45,4 @@ def get_vocab():
         return config["vocab"]
 
 
-VOCAB = get_vocab()
+DEFAULT_VOCAB = get_vocab()

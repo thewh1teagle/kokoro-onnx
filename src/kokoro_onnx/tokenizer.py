@@ -1,7 +1,7 @@
 import phonemizer
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
 import espeakng_loader
-from .config import MAX_PHONEME_LENGTH, VOCAB, EspeakConfig
+from .config import MAX_PHONEME_LENGTH, DEFAULT_VOCAB, EspeakConfig
 from .log import log
 import ctypes
 import platform
@@ -10,7 +10,9 @@ import os
 
 
 class Tokenizer:
-    def __init__(self, espeak_config: EspeakConfig | None = None):
+    def __init__(self, espeak_config: EspeakConfig | None = None, vocab: dict = None):
+        self.vocab = vocab or DEFAULT_VOCAB
+
         if not espeak_config:
             espeak_config = EspeakConfig()
         if not espeak_config.data_path:
@@ -58,7 +60,7 @@ class Tokenizer:
             raise ValueError(
                 f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
             )
-        return [i for i in map(VOCAB.get, phonemes) if i is not None]
+        return [i for i in map(self.vocab.get, phonemes) if i is not None]
 
     def phonemize(self, text, lang="en-us", norm=True) -> str:
         """
@@ -70,5 +72,5 @@ class Tokenizer:
         phonemes = phonemizer.phonemize(
             text, lang, preserve_punctuation=True, with_stress=True
         )
-        phonemes = "".join(filter(lambda p: p in VOCAB, phonemes))
+        phonemes = "".join(filter(lambda p: p in self.vocab, phonemes))
         return phonemes.strip()

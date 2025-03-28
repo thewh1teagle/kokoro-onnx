@@ -11,6 +11,7 @@ from collections.abc import AsyncGenerator
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
+import json
 
 from .config import (
     MAX_PHONEME_LENGTH,
@@ -29,6 +30,7 @@ class Kokoro:
         model_path: str,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
+        vocab_config: dict | str = None,
     ):
         # Show useful information for bug reports
         log.debug(
@@ -53,7 +55,17 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: np.ndarray = np.load(voices_path)
-        self.tokenizer = Tokenizer(espeak_config)
+
+        vocab = None
+
+        if isinstance(vocab_config, str):
+            with open(vocab_config, "r") as fp:
+                config = json.load(fp)
+                vocab = config["vocab"]
+        if isinstance(vocab, dict):
+            vocab = vocab["vocab"]
+
+        self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
 
     @classmethod
     def from_session(
