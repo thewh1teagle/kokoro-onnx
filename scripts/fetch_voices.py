@@ -45,13 +45,16 @@ def get_voice_names(api_url):
     names = [voice["path"][7:-3] for voice in data]
     return names
 
+
 def download_config():
-    resp = requests.get("https://huggingface.co/hexgrad/Kokoro-82M/raw/main/config.json")
+    resp = requests.get(
+        "https://huggingface.co/hexgrad/Kokoro-82M/raw/main/config.json"
+    )
     resp.raise_for_status()
     content = resp.content
-    with open(Path(__file__).parent / '../src/kokoro_onnx/config.json', 'wb') as fp:
+    with open(Path(__file__).parent / "../src/kokoro_onnx/config.json", "wb") as fp:
         fp.write(content)
-    
+
 
 def download_voices(voice_url: str, names: list[str], npz_path: str):
     count = len(names)
@@ -85,7 +88,7 @@ def main():
             model_config["npz_path"],
         )
         voice_names = get_voice_names(api_url)
-        # download_voices(voice_url, voice_names, npz_path)
+        download_voices(voice_url, voice_names, npz_path)
         download_config()
 
 
