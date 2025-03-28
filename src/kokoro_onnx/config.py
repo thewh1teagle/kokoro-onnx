@@ -41,7 +41,7 @@ class KoKoroConfig:
 
 def get_vocab():
     with open(Path(__file__).parent / "vocab.json") as fp:
-        return json.load(fp)['vocab']
+        return json.load(fp)
 
 
 VOCAB = get_vocab()
