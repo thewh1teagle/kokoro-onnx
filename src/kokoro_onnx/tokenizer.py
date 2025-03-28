@@ -1,4 +1,3 @@
-import re
 import phonemizer
 from phonemizer.backend.espeak.wrapper import EspeakWrapper
 import espeakng_loader
@@ -49,7 +48,7 @@ class Tokenizer:
 
         EspeakWrapper.set_data_path(espeak_config.data_path)
         EspeakWrapper.set_library(espeak_config.lib_path)
-        
+
     @staticmethod
     def normalize_text(text) -> str:
         return text.strip()

@@ -3,8 +3,6 @@ from dataclasses import dataclass
 import json
 
 
-
-
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
 
@@ -37,14 +35,12 @@ class KoKoroConfig:
 
         if not Path(self.model_path).exists():
             error_msg = f"Model file not found at {self.model_path}"
-            error_msg += (
-                "\nYou can download the model file from https://github.com/thewh1teagle/kokoro-onnx/releases"
-            )
+            error_msg += "\nYou can download the model file from https://github.com/thewh1teagle/kokoro-onnx/releases"
             raise FileNotFoundError(error_msg)
 
 
 def get_vocab():
-    with open(Path(__file__).parent / 'vocab.json') as fp:
+    with open(Path(__file__).parent / "vocab.json") as fp:
         return json.load(fp)
 
 

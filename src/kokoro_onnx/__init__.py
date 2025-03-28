@@ -87,24 +87,21 @@ class Kokoro:
 
         voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
-        if 'input_ids' in [i.name for i in self.sess.get_inputs()]:
+        if "input_ids" in [i.name for i in self.sess.get_inputs()]:
             # Newer export versions
             inputs = {
-                'input_ids': tokens,
-                'style': np.array(voice, dtype=np.float32),
-                'speed': np.array([speed], dtype=np.int32)
+                "input_ids": tokens,
+                "style": np.array(voice, dtype=np.float32),
+                "speed": np.array([speed], dtype=np.int32),
             }
         else:
             inputs = {
-                'tokens': tokens,
-                'style': voice,
-                'speed': np.ones(1, dtype=np.float32) * speed
+                "tokens": tokens,
+                "style": voice,
+                "speed": np.ones(1, dtype=np.float32) * speed,
             }
-        
-        audio = self.sess.run(
-            None,
-            inputs
-        )[0]
+
+        audio = self.sess.run(None, inputs)[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
         rtf = create_duration / audio_duration
