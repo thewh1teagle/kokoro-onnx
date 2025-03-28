@@ -1,5 +1,9 @@
 from pathlib import Path
 from dataclasses import dataclass
+import json
+
+
+
 
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
@@ -40,15 +44,8 @@ class KoKoroConfig:
 
 
 def get_vocab():
-    _pad = "$"
-    _punctuation = ';:,.!?¡¿—…"«»“” '
-    _letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    _letters_ipa = "ɑɐɒæɓʙβɔɕçɗɖðʤəɘɚɛɜɝɞɟʄɡɠɢʛɦɧħɥʜɨɪʝɭɬɫɮʟɱɯɰŋɳɲɴøɵɸθœɶʘɹɺɾɻʀʁɽʂʃʈʧʉʊʋⱱʌɣɤʍχʎʏʑʐʒʔʡʕʢǀǁǂǃˈˌːˑʼʴʰʱʲʷˠˤ˞↓↑→↗↘'̩'ᵻ"
-    symbols = [_pad] + list(_punctuation) + list(_letters) + list(_letters_ipa)
-    dicts = {}
-    for i in range(len((symbols))):
-        dicts[symbols[i]] = i
-    return dicts
+    with open(Path(__file__).parent / 'vocab.json') as fp:
+        return json.load(fp)
 
 
 VOCAB = get_vocab()
