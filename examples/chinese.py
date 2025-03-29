@@ -25,8 +25,8 @@ from misaki import zh
 g2p = zh.ZHG2P()
 
 text = "千里之行，始于足下。"
-voice = "af_maple"
-kokoro = Kokoro("kokoro-v1.1-zh.onnx", "voices-v1.1-zh.bin", vocab_config='config.json')
+voice = "zf_001"
+kokoro = Kokoro("kokoro-v1.1-zh.onnx", "voices-v1.1-zh.bin", vocab_config=None)
 phonemes, _ = g2p(text)
 samples, sample_rate = kokoro.create(phonemes, voice=voice, speed=1.0, is_phonemes=True)
 sf.write("audio.wav", samples, sample_rate)

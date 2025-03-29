@@ -62,7 +62,7 @@ class Kokoro:
             with open(vocab_config, "r") as fp:
                 config = json.load(fp)
                 vocab = config["vocab"]
-        if isinstance(vocab, dict):
+        elif isinstance(vocab, dict):
             vocab = vocab["vocab"]
 
         self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
