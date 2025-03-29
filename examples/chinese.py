@@ -22,7 +22,7 @@ from kokoro_onnx import Kokoro
 from misaki import zh
 
 # Misaki G2P with espeak-ng fallback
-g2p = zh.ZHG2P()
+g2p = zh.ZHG2P(version="1.1")
 
 text = "千里之行，始于足下。"
 voice = "zf_001"
