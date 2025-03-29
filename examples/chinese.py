@@ -12,6 +12,7 @@ Usage:
     Download these files
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.1-zh.onnx
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/voices-v1.1-zh.bin
+    https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh/raw/main/config.json
 4. Run
     uv run main.py
 """
@@ -21,11 +22,11 @@ from kokoro_onnx import Kokoro
 from misaki import zh
 
 # Misaki G2P with espeak-ng fallback
-g2p = zh.ZHG2P()
+g2p = zh.ZHG2P(version="1.1")
 
 text = "千里之行，始于足下。"
-voice = "af_maple"
-kokoro = Kokoro("kokoro-v1.1-zh.onnx", "voices-v1.1-zh.bin")
+voice = "zf_001"
+kokoro = Kokoro("kokoro-v1.1-zh.onnx", "voices-v1.1-zh.bin", vocab_config="config.json")
 phonemes, _ = g2p(text)
 samples, sample_rate = kokoro.create(phonemes, voice=voice, speed=1.0, is_phonemes=True)
 sf.write("audio.wav", samples, sample_rate)

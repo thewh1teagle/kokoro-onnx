@@ -13,6 +13,7 @@ wheels/
 *.wav
 *.json
 !.vscode/*.json
+!src/kokoro_onnx/config.json
 espeak-ng-data/
 *.tar.gz
 *.dylib

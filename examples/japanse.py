@@ -12,6 +12,7 @@ Usage:
     Download these files
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.1-zh.onnx
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/voices-v1.1-zh.bin
+    https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh/raw/main/config.json
 4. Run
     uv run main.py
 """
@@ -25,7 +26,7 @@ g2p = ja.JAG2P()
 
 text = "「人生を夢見るな。夢を生きろ。」"
 voice = "jf_alpha"
-kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
+kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin", vocab_config="config.json")
 phonemes, _ = g2p(text)
 samples, sample_rate = kokoro.create(phonemes, voice=voice, speed=1.0, is_phonemes=True)
 sf.write("audio.wav", samples, sample_rate)

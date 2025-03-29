@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.9"
 
 [[package]]
@@ -356,7 +357,7 @@ wheels = [
 
 [[package]]
 name = "kokoro-onnx"
-version = "0.4.5"
+version = "0.4.6b1"
 source = { editable = "." }
 dependencies = [
     { name = "colorlog" },
@@ -387,6 +388,7 @@ requires-dist = [
     { name = "onnxruntime-gpu", marker = "platform_machine == 'x86_64' and sys_platform != 'darwin' and extra == 'gpu'", specifier = ">=1.20.1" },
     { name = "phonemizer-fork", specifier = "==3.3.1" },
 ]
+provides-extras = ["gpu"]
 
 [package.metadata.requires-dev]
 dev = [

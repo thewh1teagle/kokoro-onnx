@@ -11,6 +11,7 @@ from collections.abc import AsyncGenerator
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
+import json
 
 from .config import (
     MAX_PHONEME_LENGTH,
@@ -29,6 +30,7 @@ class Kokoro:
         model_path: str,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
+        vocab_config: dict | str = None,
     ):
         # Show useful information for bug reports
         log.debug(
@@ -53,7 +55,17 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: np.ndarray = np.load(voices_path)
-        self.tokenizer = Tokenizer(espeak_config)
+
+        vocab = None
+
+        if isinstance(vocab_config, str):
+            with open(vocab_config, "r") as fp:
+                config = json.load(fp)
+                vocab = config["vocab"]
+        elif isinstance(vocab, dict):
+            vocab = vocab["vocab"]
+
+        self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
 
     @classmethod
     def from_session(
@@ -87,24 +99,21 @@ class Kokoro:
 
         voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
-        if 'input_ids' in [i.name for i in self.sess.get_inputs()]:
+        if "input_ids" in [i.name for i in self.sess.get_inputs()]:
             # Newer export versions
             inputs = {
-                'input_ids': tokens,
-                'style': np.array(voice, dtype=np.float32),
-                'speed': np.array([speed], dtype=np.int32)
+                "input_ids": tokens,
+                "style": np.array(voice, dtype=np.float32),
+                "speed": np.array([speed], dtype=np.int32),
             }
         else:
             inputs = {
-                'tokens': tokens,
-                'style': voice,
-                'speed': np.ones(1, dtype=np.float32) * speed
+                "tokens": tokens,
+                "style": voice,
+                "speed": np.ones(1, dtype=np.float32) * speed,
             }
-        
-        audio = self.sess.run(
-            None,
-            inputs
-        )[0]
+
+        audio = self.sess.run(None, inputs)[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
         rtf = create_duration / audio_duration

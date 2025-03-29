@@ -1,5 +1,7 @@
 from pathlib import Path
 from dataclasses import dataclass
+import json
+
 
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000
@@ -33,22 +35,14 @@ class KoKoroConfig:
 
         if not Path(self.model_path).exists():
             error_msg = f"Model file not found at {self.model_path}"
-            error_msg += (
-                "\nYou can download the model file from https://github.com/thewh1teagle/kokoro-onnx/releases"
-            )
+            error_msg += "\nYou can download the model file from https://github.com/thewh1teagle/kokoro-onnx/releases"
             raise FileNotFoundError(error_msg)
 
 
 def get_vocab():
-    _pad = "$"
-    _punctuation = ';:,.!?¡¿—…"«»“” '
-    _letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    _letters_ipa = "ɑɐɒæɓʙβɔɕçɗɖðʤəɘɚɛɜɝɞɟʄɡɠɢʛɦɧħɥʜɨɪʝɭɬɫɮʟɱɯɰŋɳɲɴøɵɸθœɶʘɹɺɾɻʀʁɽʂʃʈʧʉʊʋⱱʌɣɤʍχʎʏʑʐʒʔʡʕʢǀǁǂǃˈˌːˑʼʴʰʱʲʷˠˤ˞↓↑→↗↘'̩'ᵻ"
-    symbols = [_pad] + list(_punctuation) + list(_letters) + list(_letters_ipa)
-    dicts = {}
-    for i in range(len((symbols))):
-        dicts[symbols[i]] = i
-    return dicts
+    with open(Path(__file__).parent / "config.json") as fp:
+        config = json.load(fp)
+        return config["vocab"]
 
 
-VOCAB = get_vocab()
+DEFAULT_VOCAB = get_vocab()

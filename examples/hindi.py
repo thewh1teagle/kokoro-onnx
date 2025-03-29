@@ -19,12 +19,12 @@ For other languages read https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOI
 
 import soundfile as sf
 from kokoro_onnx import Kokoro
-from misaki import en, espeak
+from misaki import espeak
 from misaki.espeak import EspeakG2P
 
 # Misaki G2P with espeak-ng fallback
 fallback = espeak.EspeakFallback(british=False)
-g2p = EspeakG2P(language='hi')
+g2p = EspeakG2P(language="hi")
 
 # Kokoro
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")

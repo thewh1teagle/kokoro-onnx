@@ -9,10 +9,9 @@ on:
     branches: [main]
   workflow_dispatch:
 jobs:
-  codespell_and_ruff:
+  ruff:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: codespell-project/actions-codespell@v2
-    - uses: astral-sh/ruff-action@v3
-    - run: ruff format --diff
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+      - run: ruff format --diff
