@@ -26,7 +26,7 @@ g2p = ja.JAG2P()
 
 text = "「人生を夢見るな。夢を生きろ。」"
 voice = "jf_alpha"
-kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin", vocab_config='config.json')
+kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin", vocab_config="config.json")
 phonemes, _ = g2p(text)
 samples, sample_rate = kokoro.create(phonemes, voice=voice, speed=1.0, is_phonemes=True)
 sf.write("audio.wav", samples, sample_rate)
