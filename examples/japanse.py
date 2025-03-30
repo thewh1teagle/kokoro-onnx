@@ -7,7 +7,7 @@ Usage:
 3.
     Run
     uv venv -p 3.12
-    uv pip install -U kokoro-onnx==0.4.4 soundfile==0.13.1 'misaki[ja]==0.8.4'
+    uv pip install -U kokoro-onnx soundfile 'misaki[ja]'
 3.
     Download these files
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.1-zh.onnx
