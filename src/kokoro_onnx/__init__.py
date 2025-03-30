@@ -59,7 +59,7 @@ class Kokoro:
         vocab = None
 
         if isinstance(vocab_config, str):
-            with open(vocab_config, "r") as fp:
+            with open(vocab_config, "r", encoding="utf-8") as fp:
                 config = json.load(fp)
                 vocab = config["vocab"]
         elif isinstance(vocab, dict):
