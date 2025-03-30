@@ -1,6 +1,6 @@
 [project]
 name = "kokoro-onnx"
-version = "0.4.6-beta.1"
+version = "0.4.6"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
