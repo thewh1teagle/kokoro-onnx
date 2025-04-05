@@ -30,7 +30,7 @@ class Kokoro:
         model_path: str,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
-        vocab_config: dict | str = None,
+        vocab_config: dict | str | None = None,
     ):
         # Show useful information for bug reports
         log.debug(
@@ -56,15 +56,7 @@ class Kokoro:
         self.sess = rt.InferenceSession(model_path, providers=providers)
         self.voices: np.ndarray = np.load(voices_path)
 
-        vocab = None
-
-        if isinstance(vocab_config, str):
-            with open(vocab_config, "r", encoding="utf-8") as fp:
-                config = json.load(fp)
-                vocab = config["vocab"]
-        elif isinstance(vocab, dict):
-            vocab = vocab["vocab"]
-
+        vocab = self._load_vocab(vocab_config)
         self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
 
     @classmethod
@@ -73,14 +65,35 @@ class Kokoro:
         session: rt.InferenceSession,
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
+        vocab_config: dict | str | None = None,
     ):
         instance = cls.__new__(cls)
         instance.sess = session
         instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
         instance.config.validate()
         instance.voices = np.load(voices_path)
-        instance.tokenizer = Tokenizer(espeak_config)
+
+        vocab = instance._load_vocab(vocab_config)
+        instance.tokenizer = Tokenizer(espeak_config, vocab=vocab)
         return instance
+
+    def _load_vocab(self, vocab_config: dict | str | None) -> dict:
+        """Load vocabulary from config file or dictionary.
+
+        Args:
+            vocab_config: Path to vocab config file or dictionary containing vocab.
+
+        Returns:
+            Loaded vocabulary dictionary or empty dictionary if no config provided.
+        """
+
+        if isinstance(vocab_config, str):
+            with open(vocab_config, "r", encoding="utf-8") as fp:
+                config = json.load(fp)
+                return config["vocab"]
+        if isinstance(vocab_config, dict):
+            return vocab_config["vocab"]
+        return {}
 
     def _create_audio(
         self, phonemes: str, voice: NDArray[np.float32], speed: float
