@@ -106,9 +106,9 @@ class Kokoro:
         phonemes = phonemes[:MAX_PHONEME_LENGTH]
         start_t = time.time()
         tokens = np.array(self.tokenizer.tokenize(phonemes), dtype=np.int64)
-        assert (
-            len(tokens) <= MAX_PHONEME_LENGTH
-        ), f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
+        assert len(tokens) <= MAX_PHONEME_LENGTH, (
+            f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
+        )
 
         voice = voice[len(tokens)]
         tokens = [[0, *tokens, 0]]
