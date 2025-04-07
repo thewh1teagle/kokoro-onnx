@@ -18,8 +18,9 @@ Usage:
 """
 
 import soundfile as sf
-from kokoro_onnx import Kokoro
 from misaki import zh
+
+from kokoro_onnx import Kokoro
 
 # Misaki G2P with espeak-ng fallback
 g2p = zh.ZHG2P(version="1.1")

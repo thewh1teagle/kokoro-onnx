@@ -6,10 +6,12 @@ wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v
 python examples/podcast.py
 """
 
-import soundfile as sf
-from kokoro_onnx import Kokoro
-import numpy as np
 import random
+
+import numpy as np
+import soundfile as sf
+
+from kokoro_onnx import Kokoro
 
 # fmt: off
 sentences = [

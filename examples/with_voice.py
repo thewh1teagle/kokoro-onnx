@@ -8,6 +8,7 @@ python examples/with_voice.py
 
 import numpy as np
 import soundfile as sf
+
 from kokoro_onnx import Kokoro
 from kokoro_onnx.config import SAMPLE_RATE
 

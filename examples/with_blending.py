@@ -6,9 +6,10 @@ wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v
 python examples/with_blending.py
 """
 
-import soundfile as sf
-from kokoro_onnx import Kokoro
 import numpy as np
+import soundfile as sf
+
+from kokoro_onnx import Kokoro
 
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 nicole: np.ndarray = kokoro.get_voice_style("af_nicole")

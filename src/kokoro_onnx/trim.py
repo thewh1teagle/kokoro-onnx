@@ -14,7 +14,8 @@ Reference:
 """
 
 import warnings
-from typing import Callable, Optional, Any, Union, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
@@ -83,10 +84,10 @@ def abs2(x, dtype):
 def amplitude_to_db(
     S,
     *,
-    ref: Union[float, Callable] = 1.0,
+    ref: float | Callable = 1.0,
     amin: float = 1e-5,
-    top_db: Optional[float] = 80.0,
-) -> Union[np.floating[Any], np.ndarray]:
+    top_db: float | None = 80.0,
+) -> np.floating[Any] | np.ndarray:
     """Convert an amplitude spectrogram to dB-scaled spectrogram.
 
     This is equivalent to ``power_to_db(S**2, ref=ref**2, amin=amin**2, top_db=top_db)``,
@@ -154,7 +155,7 @@ def _signal_to_frame_nonsilent(
     frame_length: int = 2048,
     hop_length: int = 512,
     top_db: float = 60,
-    ref: Union[Callable, float] = np.max,
+    ref: Callable | float = np.max,
     aggregate: Callable = np.max,
 ) -> np.ndarray:
     """Frame-wise non-silent indicator for audio input.
@@ -212,11 +213,11 @@ def trim(
     y: np.ndarray,
     *,
     top_db: float = 60,
-    ref: Union[float, Callable] = np.max,
+    ref: float | Callable = np.max,
     frame_length: int = 2048,
     hop_length: int = 512,
     aggregate: Callable = np.max,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Trim leading and trailing silence from an audio signal.
 
     Silence is defined as segments of the audio signal that are `top_db`
@@ -296,8 +297,8 @@ def trim(
 
 def rms(
     *,
-    y: Optional[np.ndarray] = None,
-    S: Optional[np.ndarray] = None,
+    y: np.ndarray | None = None,
+    S: np.ndarray | None = None,
     frame_length: int = 2048,
     hop_length: int = 512,
     center: bool = True,
@@ -383,11 +384,9 @@ def rms(
         # Check the frame length
         if S.shape[-2] != frame_length // 2 + 1:
             raise ParameterError(
-                "Since S.shape[-2] is {}, "
-                "frame_length is expected to be {} or {}; "
-                "found {}".format(
-                    S.shape[-2], S.shape[-2] * 2 - 2, S.shape[-2] * 2 - 1, frame_length
-                )
+                f"Since S.shape[-2] is {S.shape[-2]}, "
+                f"frame_length is expected to be {S.shape[-2] * 2 - 2} or {S.shape[-2] * 2 - 1}; "
+                f"found {frame_length}"
             )
 
         # power spectrogram
@@ -576,10 +575,10 @@ def frame(
 def power_to_db(
     S,
     *,
-    ref: Union[float, Callable] = 1.0,
+    ref: float | Callable = 1.0,
     amin: float = 1e-10,
-    top_db: Optional[float] = 80.0,
-) -> Union[np.floating[Any], np.ndarray]:
+    top_db: float | None = 80.0,
+) -> np.floating[Any] | np.ndarray:
     """Convert a power spectrogram (amplitude squared) to decibel (dB) units
 
     This computes the scaling ``10 * log10(S / ref)`` in a numerically
@@ -704,8 +703,8 @@ def frames_to_samples(
     frames,
     *,
     hop_length: int = 512,
-    n_fft: Optional[int] = None,
-) -> Union[np.integer[Any], np.ndarray]:
+    n_fft: int | None = None,
+) -> np.integer[Any] | np.ndarray:
     """Convert frame indices to audio sample indices.
 
     Parameters

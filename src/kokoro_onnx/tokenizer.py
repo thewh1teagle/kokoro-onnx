@@ -1,12 +1,14 @@
-import phonemizer
-from phonemizer.backend.espeak.wrapper import EspeakWrapper
-import espeakng_loader
-from .config import MAX_PHONEME_LENGTH, DEFAULT_VOCAB, EspeakConfig
-from .log import log
 import ctypes
+import os
 import platform
 import sys
-import os
+
+import espeakng_loader
+import phonemizer
+from phonemizer.backend.espeak.wrapper import EspeakWrapper
+
+from .config import DEFAULT_VOCAB, MAX_PHONEME_LENGTH, EspeakConfig
+from .log import log
 
 
 class Tokenizer:

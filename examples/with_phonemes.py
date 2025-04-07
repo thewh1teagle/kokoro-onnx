@@ -7,9 +7,9 @@ python examples/with_phonemes.py
 """
 
 import sounddevice as sd
+
 from kokoro_onnx import Kokoro
 from kokoro_onnx.tokenizer import Tokenizer
-
 
 tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")

@@ -17,9 +17,11 @@ Usage:
    python examples/with_quant.py <chosen_model>
 """
 
-import sounddevice as sd
-from kokoro_onnx import Kokoro
 import sys
+
+import sounddevice as sd
+
+from kokoro_onnx import Kokoro
 
 kokoro = Kokoro(sys.argv[1], "voices-v1.0.bin")
 samples, sample_rate = kokoro.create(

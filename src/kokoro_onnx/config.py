@@ -1,7 +1,6 @@
-from pathlib import Path
-from dataclasses import dataclass
 import json
-
+from dataclasses import dataclass
+from pathlib import Path
 
 MAX_PHONEME_LENGTH = 510
 SAMPLE_RATE = 24000

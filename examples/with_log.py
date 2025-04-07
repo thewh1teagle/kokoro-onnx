@@ -9,7 +9,9 @@ python examples/with_log.py
 """
 
 import logging
+
 import sounddevice as sd
+
 import kokoro_onnx
 from kokoro_onnx import Kokoro
 
