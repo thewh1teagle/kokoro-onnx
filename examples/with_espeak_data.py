@@ -7,7 +7,8 @@ python examples/with_espeak_data.py
 """
 
 import soundfile as sf
-from kokoro_onnx import Kokoro, EspeakConfig
+
+from kokoro_onnx import EspeakConfig, Kokoro
 
 kokoro = Kokoro(
     "kokoro-v1.0.onnx",

@@ -6,11 +6,13 @@ wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v
 python examples/with_session.py
 """
 
-import soundfile as sf
-from kokoro_onnx import Kokoro
-from onnxruntime import InferenceSession
-import onnxruntime
 import os
+
+import onnxruntime
+import soundfile as sf
+from onnxruntime import InferenceSession
+
+from kokoro_onnx import Kokoro
 
 
 def create_session():

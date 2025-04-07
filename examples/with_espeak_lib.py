@@ -10,9 +10,10 @@ PHONEMIZER_ESPEAK_LIBRARY="/usr/local/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.1
 """
 
 import os
-import sounddevice as sd
-from kokoro_onnx import Kokoro, EspeakConfig
 
+import sounddevice as sd
+
+from kokoro_onnx import EspeakConfig, Kokoro
 
 kokoro = Kokoro(
     "kokoro-v1.0.onnx",

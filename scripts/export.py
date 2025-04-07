@@ -21,11 +21,11 @@ uv run examples/export.py --config_file checkpoints/config.json --checkpoint_pat
 
 import argparse
 import os
-import torch
+
 import onnx
 import onnxruntime as ort
 import sounddevice as sd
-
+import torch
 from kokoro import KModel, KPipeline
 from kokoro.model import KModelForONNX
 

@@ -2,6 +2,7 @@ import asyncio
 import importlib
 import importlib.metadata
 import importlib.util
+import json
 import os
 import platform
 import re
@@ -11,14 +12,8 @@ from collections.abc import AsyncGenerator
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
-import json
 
-from .config import (
-    MAX_PHONEME_LENGTH,
-    SAMPLE_RATE,
-    EspeakConfig,
-    KoKoroConfig,
-)
+from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
 from .tokenizer import Tokenizer
 from .trim import trim as trim_audio
@@ -88,7 +83,7 @@ class Kokoro:
         """
 
         if isinstance(vocab_config, str):
-            with open(vocab_config, "r", encoding="utf-8") as fp:
+            with open(vocab_config, encoding="utf-8") as fp:
                 config = json.load(fp)
                 return config["vocab"]
         if isinstance(vocab_config, dict):

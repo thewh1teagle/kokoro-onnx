@@ -9,7 +9,8 @@ python examples/with_stream_save.py
 import asyncio
 
 import soundfile as sf
-from kokoro_onnx import Kokoro, SAMPLE_RATE
+
+from kokoro_onnx import SAMPLE_RATE, Kokoro
 
 text = """
 We've just been hearing from Matthew Cappucci, a senior meteorologist at the weather app MyRadar, who says Kansas City is seeing its heaviest snow in 32 years - with more than a foot (30 to 40cm) having come down so far.

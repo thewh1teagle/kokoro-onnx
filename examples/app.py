@@ -16,9 +16,10 @@ uv run examples/app.py
 """
 
 import gradio as gr
+import numpy as np
+
 from kokoro_onnx import Kokoro
 from kokoro_onnx.tokenizer import Tokenizer
-import numpy as np
 
 tokenizer = Tokenizer()
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")

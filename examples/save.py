@@ -7,6 +7,7 @@ python examples/save.py
 """
 
 import soundfile as sf
+
 from kokoro_onnx import Kokoro
 
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")

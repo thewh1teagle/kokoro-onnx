@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
@@ -34,7 +34,19 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["ruff>=0.11.0", "sounddevice>=0.5.1", "soundfile>=0.13.0"]
+dev = [
+    "ruff>=0.11.0",
+    "sounddevice>=0.5.1",
+    "soundfile>=0.13.0",
+]
 
 [tool.ruff]
 required-version = ">=0.9.0"
+output-format = "concise"
+show-fixes = true
+
+[tool.ruff.lint]
+extend-select = ["I", "UP"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false

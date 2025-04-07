@@ -18,8 +18,9 @@ Usage:
 """
 
 import soundfile as sf
-from kokoro_onnx import Kokoro
 from misaki import ja
+
+from kokoro_onnx import Kokoro
 
 # Misaki G2P with espeak-ng fallback
 g2p = ja.JAG2P()

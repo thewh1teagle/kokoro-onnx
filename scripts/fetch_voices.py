@@ -16,12 +16,13 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
 """
 
 import io
+import os
+from pathlib import Path
+
 import numpy as np
 import requests
 import torch
-import os
 from tqdm import tqdm
-from pathlib import Path
 
 config = {
     "Kokoro-82M-v1.1-zh": {
