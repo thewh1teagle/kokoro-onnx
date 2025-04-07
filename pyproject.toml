@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "onnxruntime>=1.20.1",
     "colorlog>=6.9.0",
