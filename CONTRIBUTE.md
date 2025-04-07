@@ -19,6 +19,13 @@ uv run ruff format
 uv run ruff check
 ```
 
+If you want to use ruff for quick [safety fixes](https://docs.astral.sh/ruff/linter/#fix-safety),
+you can run the following command:
+
+```console
+uv run ruff check --fix
+```
+
 ## Pull Request Guidelines
 
 Do not create a pull request from your main branch. This ensures we can collaborate and edit the PR if needed.
