@@ -36,9 +36,9 @@ pip install -U kokoro-onnx
 
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation) for isolated Python (Recommend).
 
-Basically open the terminal (PowerShell / Bash) and run the command listed in their website.
-
-_Note: you don't have to use `uv`. but it just make things much simpler. You can use regular Python as well._
+```console
+pip install uv
+```
 
 2. Create new project folder (you name it)
 3. Run in the project folder
