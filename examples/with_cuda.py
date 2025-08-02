@@ -22,10 +22,14 @@ Run with uv (if you cloned the repo):
 import soundfile as sf
 from kokoro_onnx import Kokoro
 import onnxruntime as ort
+import os 
 
-privders = ort.get_available_providers()
-print("Available providers:", privders)  # Make sure CUDAExecutionProvider is listed
-print(f'Is CUDA available: {"CUDAExecutionProvider" in privders}')
+
+providers = ort.get_available_providers()  # List available providers
+is_cuda = "CUDAExecutionProvider" in providers  # True if CUDA is among them
+print("Available providers:", providers)  # Show all providers
+print(f"Is CUDA available: {is_cuda}")  # Indicate if CUDA is available
+os.environ["ONNX_PROVIDER"] = "CUDAExecutionProvider" if is_cuda else "CPUExecutionProvider" # In some envs you may need to force the Cuda provider for allocate the model on GPU
 
 kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
 samples, sample_rate = kokoro.create(
