@@ -36,26 +36,26 @@ class Kokoro:
 
         # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
         num_cores = os.cpu_count() // 4  # Adjust based on your CPU
-        
 
         providers = [
             (
                 "OpenVINOExecutionProvider",
                 {
                     "device_type": "CPU_FP32",  # or "CPU" for auto precision
-                    "precision": "FP16",         # FP32, FP16, or BF16 if supported
-                    "num_of_threads": num_cores, # Number of threads sfor inference
+                    "precision": "FP16",  # FP32, FP16, or BF16 if supported
+                    "num_of_threads": num_cores,  # Number of threads sfor inference
                     "enable_opencl_throttling": False,  # Set True if using iGPU
-                    "cache_dir": "./openvino_cache",    # Cache compiled models
-                }
+                    "cache_dir": "./openvino_cache",  # Cache compiled models
+                },
             ),
-            ("CPUExecutionProvider", {
-                "intra_op_num_threads": num_cores*2,
-                "arena_extend_strategy": "kSameAsRequested",
-            })
+            (
+                "CPUExecutionProvider",
+                {
+                    "intra_op_num_threads": num_cores * 2,
+                    "arena_extend_strategy": "kSameAsRequested",
+                },
+            ),
         ]
-
-
 
         # Check if kokoro-onnx installed with kokoro-onnx[gpu] feature (Windows/Linux)
         gpu_enabled = importlib.util.find_spec("onnxruntime-gpu")
@@ -76,7 +76,9 @@ class Kokoro:
         # sess_options.enable_mem_pattern = True     # Optimize memory usage
         sess_options.execution_mode = rt.ExecutionMode.ORT_SEQUENTIAL
         sess_options.graph_optimization_level = rt.GraphOptimizationLevel.ORT_ENABLE_ALL
-        self.sess = rt.InferenceSession(model_path, providers=providers, sess_options=sess_options)
+        self.sess = rt.InferenceSession(
+            model_path, providers=providers, sess_options=sess_options
+        )
         self.voices: np.ndarray = np.load(voices_path)
 
         vocab = self._load_vocab(vocab_config)
