@@ -51,7 +51,7 @@ class Kokoro:
             (
                 "CPUExecutionProvider",
                 {
-                    "intra_op_num_threads": num_cores * 2,
+                    "intra_op_num_threads": num_cores * 4,
                     "arena_extend_strategy": "kSameAsRequested",
                 },
             ),
@@ -70,7 +70,7 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         sess_options = rt.SessionOptions()
         sess_options.log_severity_level = 3
-        sess_options.intra_op_num_threads = num_cores
+        sess_options.intra_op_num_threads = num_cores * 4
         sess_options.inter_op_num_threads = 1
         # sess_options.enable_cpu_mem_arena = True  # Reduce memory allocation overhead
         # sess_options.enable_mem_pattern = True     # Optimize memory usage
