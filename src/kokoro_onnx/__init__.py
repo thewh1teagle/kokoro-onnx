@@ -12,12 +12,15 @@ from collections.abc import AsyncGenerator
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
+import platform
 
 from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
 from .tokenizer import Tokenizer
 from .trim import trim as trim_audio
 
+
+arch = platform.machine()
 
 class Kokoro:
     def __init__(
@@ -51,7 +54,7 @@ class Kokoro:
             (
                 "CPUExecutionProvider",
                 {
-                    "intra_op_num_threads": num_cores * 4,
+                    "intra_op_num_threads": num_cores * 2,
                     "arena_extend_strategy": "kSameAsRequested",
                 },
             ),
@@ -70,7 +73,10 @@ class Kokoro:
         log.debug(f"Providers: {providers}")
         sess_options = rt.SessionOptions()
         sess_options.log_severity_level = 3
-        sess_options.intra_op_num_threads = num_cores * 4
+        if arch == "x86_64":
+            sess_options.intra_op_num_threads = num_cores * 2
+        else:
+            sess_options.intra_op_num_threads = num_cores * 4
         sess_options.inter_op_num_threads = 1
         # sess_options.enable_cpu_mem_arena = True  # Reduce memory allocation overhead
         # sess_options.enable_mem_pattern = True     # Optimize memory usage
