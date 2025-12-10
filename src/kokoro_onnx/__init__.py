@@ -12,15 +12,14 @@ from collections.abc import AsyncGenerator
 import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
-import platform
 
 from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
 from .tokenizer import Tokenizer
 from .trim import trim as trim_audio
 
-
 arch = platform.machine()
+
 
 class Kokoro:
     def __init__(
