@@ -18,6 +18,8 @@ from .log import log
 from .tokenizer import Tokenizer
 from .trim import trim as trim_audio
 
+arch = platform.machine()
+
 
 class Kokoro:
     def __init__(
@@ -35,7 +37,27 @@ class Kokoro:
         self.config.validate()
 
         # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
-        providers = ["CPUExecutionProvider"]
+        num_cores = os.cpu_count() // 4  # Adjust based on your CPU
+
+        providers = [
+            (
+                "OpenVINOExecutionProvider",
+                {
+                    "device_type": "CPU_FP32",  # or "CPU" for auto precision
+                    "precision": "FP16",  # FP32, FP16, or BF16 if supported
+                    "num_of_threads": num_cores,  # Number of threads sfor inference
+                    "enable_opencl_throttling": False,  # Set True if using iGPU
+                    "cache_dir": "./openvino_cache",  # Cache compiled models
+                },
+            ),
+            (
+                "CPUExecutionProvider",
+                {
+                    "intra_op_num_threads": num_cores * 2,
+                    "arena_extend_strategy": "kSameAsRequested",
+                },
+            ),
+        ]
 
         # Check if kokoro-onnx installed with kokoro-onnx[gpu] feature (Windows/Linux)
         gpu_enabled = importlib.util.find_spec("onnxruntime-gpu")
@@ -48,7 +70,20 @@ class Kokoro:
             providers = [env_provider]
 
         log.debug(f"Providers: {providers}")
-        self.sess = rt.InferenceSession(model_path, providers=providers)
+        sess_options = rt.SessionOptions()
+        sess_options.log_severity_level = 3
+        if arch == "x86_64":
+            sess_options.intra_op_num_threads = num_cores * 2
+        else:
+            sess_options.intra_op_num_threads = num_cores * 4
+        sess_options.inter_op_num_threads = 1
+        # sess_options.enable_cpu_mem_arena = True  # Reduce memory allocation overhead
+        # sess_options.enable_mem_pattern = True     # Optimize memory usage
+        sess_options.execution_mode = rt.ExecutionMode.ORT_SEQUENTIAL
+        sess_options.graph_optimization_level = rt.GraphOptimizationLevel.ORT_ENABLE_ALL
+        self.sess = rt.InferenceSession(
+            model_path, providers=providers, sess_options=sess_options
+        )
         self.voices: np.ndarray = np.load(voices_path)
 
         vocab = self._load_vocab(vocab_config)
@@ -120,8 +155,10 @@ class Kokoro:
                 "style": voice,
                 "speed": np.ones(1, dtype=np.float32) * speed,
             }
-
+        start_t = time.time()
         audio = self.sess.run(None, inputs)[0]
+        end_t = time.time()
+        print(f"DnnlExecutionProvider time: {end_t - start_t:.2f}s")
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
         rtf = create_duration / audio_duration

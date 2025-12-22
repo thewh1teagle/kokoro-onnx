@@ -13,6 +13,7 @@ dependencies = [
     "espeakng-loader>=0.2.4",
     "phonemizer-fork>=3.3.2",
     "numpy>=2.0.2",
+    "onnxruntime-openvino>=1.23.0 ; (platform_machine == 'x86_64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'win32')",
 ]
 
 [project.urls]

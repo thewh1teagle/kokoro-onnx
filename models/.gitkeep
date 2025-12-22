@@ -1,0 +1,4 @@
+# This file keeps the models directory in git
+# Model files will be downloaded here:
+# - kokoro-v1.0.int8.onnx
+# - voices-v1.0.bin
