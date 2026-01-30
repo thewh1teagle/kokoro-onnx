@@ -19,9 +19,10 @@ Run with uv (if you cloned the repo):
     uv run --extra gpu ./examples/with_cuda.py
 """
 
-import soundfile as sf
-from kokoro_onnx import Kokoro
 import onnxruntime as ort
+import soundfile as sf
+
+from kokoro_onnx import Kokoro
 
 privders = ort.get_available_providers()
 print("Available providers:", privders)  # Make sure CUDAExecutionProvider is listed

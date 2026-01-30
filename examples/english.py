@@ -18,9 +18,9 @@ For other languages read https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOI
 """
 
 import soundfile as sf
+from misaki import en, espeak
 
 from kokoro_onnx import Kokoro
-from misaki import en, espeak
 
 # Misaki G2P with espeak-ng fallback
 fallback = espeak.EspeakFallback(british=False)
