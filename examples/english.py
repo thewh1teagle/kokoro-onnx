@@ -11,16 +11,16 @@ Usage:
 4. Run
     uv venv --seed -p 3.12
     source .venv/bin/activate
-    uv pip install -U kokoro-onnx soundfile 'misaki[en]'
+    uv pip install -U kokoro-onnx soundfile 'misaki-fork[en]'
     uv run main.py
 
 For other languages read https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
 """
 
 import soundfile as sf
-from misaki import en, espeak
 
 from kokoro_onnx import Kokoro
+from misaki import en, espeak
 
 # Misaki G2P with espeak-ng fallback
 fallback = espeak.EspeakFallback(british=False)
