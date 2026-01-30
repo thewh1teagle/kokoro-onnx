@@ -5,6 +5,7 @@ Provide a way to enable logging by setting LOG_LEVEL environment variable
 import logging
 import os
 
+
 def _create_logger():
     """
     Create a logger with standard output
