@@ -26,6 +26,7 @@ class Kokoro:
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
         vocab_config: dict | str | None = None,
+        lexicon: dict[str, str] | None = None,
     ):
         # Show useful information for bug reports
         log.debug(
@@ -52,7 +53,7 @@ class Kokoro:
         self.voices: np.ndarray = np.load(voices_path)
 
         vocab = self._load_vocab(vocab_config)
-        self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
+        self.tokenizer = Tokenizer(espeak_config, vocab=vocab, lexicon=lexicon)
 
     @classmethod
     def from_session(

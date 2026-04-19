@@ -1,6 +1,7 @@
 import ctypes
 import os
 import platform
+import re
 import sys
 
 import espeakng_loader
@@ -12,8 +13,14 @@ from .log import log
 
 
 class Tokenizer:
-    def __init__(self, espeak_config: EspeakConfig | None = None, vocab: dict = None):
+    def __init__(
+        self,
+        espeak_config: EspeakConfig | None = None,
+        vocab: dict = None,
+        lexicon: dict[str, str] | None = None,
+    ):
         self.vocab = vocab or DEFAULT_VOCAB
+        self._lexicon = lexicon or {}
 
         if not espeak_config:
             espeak_config = EspeakConfig()
@@ -65,11 +72,34 @@ class Tokenizer:
         return [i for i in map(self.vocab.get, phonemes) if i is not None]
 
     def phonemize(self, text, lang="en-us", norm=True) -> str:
-        """
-        lang can be 'en-us' or 'en-gb'
+        """Convert text to phonemes using eSpeak-ng.
+
+        Args:
+            text: Input text to phonemize.
+            lang: Language code ('en-us' or 'en-gb').
+            norm: Whether to normalize text before phonemization.
+
+        If a lexicon was provided at initialization, words in the lexicon
+        are replaced with their phonetic spellings before eSpeak processes
+        the text. This allows correct pronunciation of proper nouns, brand
+        names, or domain-specific terms without modifying the model.
+
+        Example lexicon::
+
+            lexicon = {
+                "Kinzleigh": "Kinzlee",
+                "HVAC": "H-vack",
+            }
         """
         if norm:
             text = Tokenizer.normalize_text(text)
+
+        # Apply lexicon substitutions (case-insensitive word replacement)
+        if self._lexicon:
+            for word, replacement in self._lexicon.items():
+                text = re.sub(
+                    rf"\b{re.escape(word)}\b", replacement, text, flags=re.IGNORECASE
+                )
 
         phonemes = phonemizer.phonemize(
             text, lang, preserve_punctuation=True, with_stress=True
