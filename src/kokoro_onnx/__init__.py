@@ -105,7 +105,7 @@ class Kokoro:
             f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
         )
 
-        voice = voice[len(tokens)]
+        voice = voice[min(len(tokens), len(voice) - 1)]
         tokens = [[0, *tokens, 0]]
         if "input_ids" in [i.name for i in self.sess.get_inputs()]:
             # Newer export versions

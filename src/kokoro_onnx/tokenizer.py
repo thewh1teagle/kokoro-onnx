@@ -55,6 +55,10 @@ class Tokenizer:
 
     @staticmethod
     def normalize_text(text) -> str:
+        import re
+
+        # Replace newlines and collapse multiple whitespace into single space
+        text = re.sub(r"\s+", " ", text)
         return text.strip()
 
     def tokenize(self, phonemes):
