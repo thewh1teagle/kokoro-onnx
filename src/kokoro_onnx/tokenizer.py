@@ -2,6 +2,11 @@ import ctypes
 import os
 import platform
 import sys
+import threading
+
+# espeak-ng holds process-global state (not thread-safe), so serialise
+# all phonemize calls across every Tokenizer instance with one lock.
+_phonemize_lock = threading.Lock()
 
 import espeakng_loader
 import phonemizer
@@ -71,8 +76,9 @@ class Tokenizer:
         if norm:
             text = Tokenizer.normalize_text(text)
 
-        phonemes = phonemizer.phonemize(
-            text, lang, preserve_punctuation=True, with_stress=True
-        )
+        with _phonemize_lock:
+            phonemes = phonemizer.phonemize(
+                text, lang, preserve_punctuation=True, with_stress=True
+            )
         phonemes = "".join(filter(lambda p: p in self.vocab, phonemes))
         return phonemes.strip()
