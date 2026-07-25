@@ -133,6 +133,25 @@ class Kokoro:
     def get_voice_style(self, name: str) -> NDArray[np.float32]:
         return self.voices[name]
 
+    @staticmethod
+    def _hard_split(part: str, limit: int) -> list[str]:
+        """
+        Split a single over-long chunk into pieces no longer than ``limit``.
+        Prefer breaking at a space so words stay intact; if there is no space,
+        fall back to a hard cut at ``limit``.
+        """
+        pieces: list[str] = []
+        while len(part) > limit:
+            window = part[:limit]
+            cut = window.rfind(" ")
+            if cut <= 0:
+                cut = limit
+            pieces.append(part[:cut].strip())
+            part = part[cut:].strip()
+        if part:
+            pieces.append(part)
+        return pieces
+
     def _split_phonemes(self, phonemes: str) -> list[str]:
         """
         Split phonemes into batches of MAX_PHONEME_LENGTH
@@ -147,19 +166,33 @@ class Kokoro:
             # Remove leading/trailing whitespace
             part = part.strip()
 
-            if part:
+            if not part:
+                continue
+
+            # A single part can itself be longer than MAX_PHONEME_LENGTH (e.g. a long
+            # run of phonemes with no punctuation). Previously it was placed into a
+            # batch unchanged and then silently truncated in _create_audio, dropping
+            # everything past the limit. Hard-split such parts first so no phonemes
+            # are lost.
+            subparts = (
+                self._hard_split(part, MAX_PHONEME_LENGTH)
+                if len(part) >= MAX_PHONEME_LENGTH
+                else [part]
+            )
+
+            for sub in subparts:
                 # If adding the part exceeds the max length, split into a new batch
-                # TODO: make it more accurate
-                if len(current_batch) + len(part) + 1 >= MAX_PHONEME_LENGTH:
-                    batched_phoenemes.append(current_batch.strip())
-                    current_batch = part
+                if len(current_batch) + len(sub) + 1 >= MAX_PHONEME_LENGTH:
+                    if current_batch:
+                        batched_phoenemes.append(current_batch.strip())
+                    current_batch = sub
                 else:
-                    if part in ".,!?;":
-                        current_batch += part
+                    if sub in ".,!?;":
+                        current_batch += sub
                     else:
                         if current_batch:
                             current_batch += " "
-                        current_batch += part
+                        current_batch += sub
 
         # Append the last batch if it contains any phonemes
         if current_batch:
