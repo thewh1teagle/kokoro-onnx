@@ -133,11 +133,21 @@ class Kokoro:
     def get_voice_style(self, name: str) -> NDArray[np.float32]:
         return self.voices[name]
 
-    def _split_phonemes(self, phonemes: str) -> list[str]:
+    def _split_phonemes(
+        self, phonemes: str, max_phoneme_length: int | None = None
+    ) -> list[str]:
         """
-        Split phonemes into batches of MAX_PHONEME_LENGTH
-        Prefer splitting at punctuation marks.
+        Split phonemes into batches of at most ``max_phoneme_length`` phonemes
+        (defaults to MAX_PHONEME_LENGTH). Prefer splitting at punctuation marks.
+
+        A smaller ``max_phoneme_length`` produces smaller batches, which lowers
+        the time-to-first-audio when streaming. It is clamped to the model limit.
         """
+        limit = MAX_PHONEME_LENGTH
+        if max_phoneme_length is not None:
+            # Never exceed the model limit; keep at least 1 so we always progress.
+            limit = max(1, min(max_phoneme_length, MAX_PHONEME_LENGTH))
+
         # Regular expression to split by punctuation and keep them
         words = re.split(r"([.,!?;])", phonemes)
         batched_phoenemes: list[str] = []
@@ -150,7 +160,7 @@ class Kokoro:
             if part:
                 # If adding the part exceeds the max length, split into a new batch
                 # TODO: make it more accurate
-                if len(current_batch) + len(part) + 1 >= MAX_PHONEME_LENGTH:
+                if len(current_batch) + len(part) + 1 >= limit:
                     batched_phoenemes.append(current_batch.strip())
                     current_batch = part
                 else:
@@ -216,9 +226,14 @@ class Kokoro:
         lang: str = "en-us",
         is_phonemes: bool = False,
         trim: bool = True,
+        max_phoneme_length: int | None = None,
     ) -> AsyncGenerator[tuple[NDArray[np.float32], int], None]:
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
+
+        ``max_phoneme_length`` optionally caps the size of each streamed batch
+        (clamped to MAX_PHONEME_LENGTH). A smaller value yields the first audio
+        chunk sooner, reducing time-to-first-audio for short/interactive use.
         """
         assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
 
@@ -231,7 +246,7 @@ class Kokoro:
         else:
             phonemes = self.tokenizer.phonemize(text, lang)
 
-        batched_phonemes = self._split_phonemes(phonemes)
+        batched_phonemes = self._split_phonemes(phonemes, max_phoneme_length)
         queue: asyncio.Queue[tuple[NDArray[np.float32], int] | None] = asyncio.Queue()
 
         async def process_batches():
