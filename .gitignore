@@ -26,3 +26,4 @@ espeak-ng-data/
 # Virtual environments
 .venv
 models/
+.env.local

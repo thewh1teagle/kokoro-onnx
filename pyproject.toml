@@ -1,6 +1,6 @@
 [project]
 name = "kokoro-onnx"
-version = "0.5.0"
+version = "0.6.0"
 description = "TTS with kokoro and onnx runtime"
 readme = "README.md"
 authors = [
@@ -10,7 +10,7 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "onnxruntime>=1.20.1",
     "espeakng-loader>=0.2.4",
-    "phonemizer-fork>=3.3.2",
+    "phonemizer>=3.4.0",
     "numpy>=2.0.2",
 ]
 
@@ -33,15 +33,18 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["ruff>=0.11.0", "sounddevice>=0.5.1", "soundfile>=0.13.0"]
+dev = ["ruff>=0.16.3", "sounddevice>=0.5.1", "soundfile>=0.13.0"]
 
 [tool.ruff]
-required-version = ">=0.9.0"
+required-version = ">=0.16.0"
 output-format = "concise"
 show-fixes = true
 
 [tool.ruff.lint]
-extend-select = ["I", "UP"]
+# ruff >=0.16 enables a much wider default rule set; keep the previous
+# selection (ruff's pre-0.16 default + isort/pyupgrade) so vendored code
+# in trim.py stays untouched
+select = ["E4", "E7", "E9", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false

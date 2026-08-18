@@ -1,7 +1,9 @@
 import ctypes
+import ctypes.util
 import os
 import platform
 import sys
+import threading
 
 import espeakng_loader
 import phonemizer
@@ -9,6 +11,10 @@ from phonemizer.backend.espeak.wrapper import EspeakWrapper
 
 from .config import DEFAULT_VOCAB, MAX_PHONEME_LENGTH, EspeakConfig
 from .log import log
+
+# espeak-ng holds process-global state, so concurrent phonemization returns
+# corrupted phonemes. Inference stays outside this lock and runs concurrently.
+_espeak_lock = threading.Lock()
 
 
 class Tokenizer:
@@ -50,19 +56,23 @@ class Tokenizer:
             except Exception as e:
                 raise RuntimeError(f"{e}: {error_info}")
 
-        EspeakWrapper.set_data_path(espeak_config.data_path)
-        EspeakWrapper.set_library(espeak_config.lib_path)
+        with _espeak_lock:
+            EspeakWrapper.set_data_path(espeak_config.data_path)
+            EspeakWrapper.set_library(espeak_config.lib_path)
 
     @staticmethod
     def normalize_text(text) -> str:
         return text.strip()
 
-    def tokenize(self, phonemes):
-        if len(phonemes) > MAX_PHONEME_LENGTH:
-            raise ValueError(
-                f"text is too long, must be less than {MAX_PHONEME_LENGTH} phonemes"
-            )
+    def tokenize(self, phonemes, limit: int | None = MAX_PHONEME_LENGTH):
+        """Map phonemes to token ids, dropping anything outside the vocabulary."""
+        if limit is not None and len(phonemes) > limit:
+            raise ValueError(f"text is too long, must be less than {limit} phonemes")
         return [i for i in map(self.vocab.get, phonemes) if i is not None]
+
+    def known(self, phonemes: str) -> str:
+        """The phonemes that survive tokenization, aligned one to one with it."""
+        return "".join(p for p in phonemes if p in self.vocab)
 
     def phonemize(self, text, lang="en-us", norm=True) -> str:
         """
@@ -71,8 +81,9 @@ class Tokenizer:
         if norm:
             text = Tokenizer.normalize_text(text)
 
-        phonemes = phonemizer.phonemize(
-            text, lang, preserve_punctuation=True, with_stress=True
-        )
+        with _espeak_lock:
+            phonemes = phonemizer.phonemize(
+                text, lang, preserve_punctuation=True, with_stress=True
+            )
         phonemes = "".join(filter(lambda p: p in self.vocab, phonemes))
         return phonemes.strip()

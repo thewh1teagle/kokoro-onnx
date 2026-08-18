@@ -1,11 +1,9 @@
 import asyncio
+import contextlib
 import importlib
 import importlib.metadata
-import importlib.util
 import json
-import os
 import platform
-import re
 import time
 from collections.abc import AsyncGenerator
 
@@ -13,8 +11,11 @@ import numpy as np
 import onnxruntime as rt
 from numpy.typing import NDArray
 
+from .chunker import pause_after, split_phonemes
 from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
+from .session import create_session, embedded_vocab, input_dtypes
+from .sliding import Timing, synthesize, timings, token_edges
 from .tokenizer import Tokenizer
 from .trim import trim as trim_audio
 
@@ -31,28 +32,13 @@ class Kokoro:
         log.debug(
             f"koko-onnx version {importlib.metadata.version('kokoro-onnx')} on {platform.platform()} {platform.version()}"
         )
-        self.config = KoKoroConfig(model_path, voices_path, espeak_config)
-        self.config.validate()
-
-        # See list of providers https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
-        providers = ["CPUExecutionProvider"]
-
-        # Check if kokoro-onnx installed with kokoro-onnx[gpu] feature (Windows/Linux)
-        gpu_enabled = importlib.util.find_spec("onnxruntime-gpu")
-        if gpu_enabled:
-            providers: list[str] = rt.get_available_providers()
-
-        # Check if ONNX_PROVIDER environment variable was set
-        env_provider = os.getenv("ONNX_PROVIDER")
-        if env_provider:
-            providers = [env_provider]
-
-        log.debug(f"Providers: {providers}")
-        self.sess = rt.InferenceSession(model_path, providers=providers)
-        self.voices: np.ndarray = np.load(voices_path)
-
-        vocab = self._load_vocab(vocab_config)
-        self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
+        self._setup(
+            session=create_session(model_path),
+            model_path=model_path,
+            voices_path=voices_path,
+            espeak_config=espeak_config,
+            vocab_config=vocab_config,
+        )
 
     @classmethod
     def from_session(
@@ -63,14 +49,43 @@ class Kokoro:
         vocab_config: dict | str | None = None,
     ):
         instance = cls.__new__(cls)
-        instance.sess = session
-        instance.config = KoKoroConfig(session._model_path, voices_path, espeak_config)
-        instance.config.validate()
-        instance.voices = np.load(voices_path)
-
-        vocab = instance._load_vocab(vocab_config)
-        instance.tokenizer = Tokenizer(espeak_config, vocab=vocab)
+        instance._setup(
+            session=session,
+            model_path=session._model_path,
+            voices_path=voices_path,
+            espeak_config=espeak_config,
+            vocab_config=vocab_config,
+        )
         return instance
+
+    def _setup(
+        self,
+        session: rt.InferenceSession,
+        model_path: str,
+        voices_path: str,
+        espeak_config: EspeakConfig | None,
+        vocab_config: dict | str | None,
+    ) -> None:
+        self.config = KoKoroConfig(model_path, voices_path, espeak_config)
+        self.config.validate()
+
+        self.sess = session
+        self.voices: np.ndarray = np.load(voices_path)
+        # An explicit config wins, then the one the model was exported with,
+        # and the vocabulary shipped with the package is the last resort
+        vocab = self._load_vocab(vocab_config) or embedded_vocab(session)
+        self.tokenizer = Tokenizer(espeak_config, vocab=vocab)
+
+        self._input_dtypes = input_dtypes(session)
+        # Older exports name the token input "tokens", newer ones "input_ids"
+        self._tokens_input = (
+            "input_ids" if "input_ids" in self._input_dtypes else "tokens"
+        )
+        # Only exports that report durations can place phonemes in time
+        self.has_timings = "duration" in {o.name for o in session.get_outputs()}
+        vocab = self.tokenizer.vocab
+        self._stops = frozenset(vocab[mark] for mark in ".!?" if mark in vocab)
+        self._spaces = frozenset(vocab[mark] for mark in " " if mark in vocab)
 
     def _load_vocab(self, vocab_config: dict | str | None) -> dict:
         """Load vocabulary from config file or dictionary.
@@ -90,44 +105,59 @@ class Kokoro:
             return vocab_config["vocab"]
         return {}
 
-    def _create_audio(
-        self, phonemes: str, voice: NDArray[np.float32], speed: float
-    ) -> tuple[NDArray[np.float32], int]:
-        log.debug(f"Phonemes: {phonemes}")
-        if len(phonemes) > MAX_PHONEME_LENGTH:
+    def _speed_value(self, speed: float) -> float:
+        """Adapt the requested speed to what the graph accepts."""
+        dtype = self._input_dtypes.get("speed", np.dtype(np.float32))
+        if dtype.kind in "iu" and float(speed) != int(speed):
+            rounded = max(1, round(speed))
             log.warning(
-                f"Phonemes are too long, truncating to {MAX_PHONEME_LENGTH} phonemes"
+                f"This model was exported with an integer speed input, "
+                f"rounding speed {speed} to {rounded}"
             )
-        phonemes = phonemes[:MAX_PHONEME_LENGTH]
+            return rounded
+        return speed
+
+    def _infer(
+        self, tokens: list[int], style: NDArray[np.float32], speed: float
+    ) -> tuple[NDArray[np.float32], NDArray[np.int64] | None]:
+        """Run the model on one window of tokens, with its frame durations."""
         start_t = time.time()
-        tokens = np.array(self.tokenizer.tokenize(phonemes), dtype=np.int64)
-        assert len(tokens) <= MAX_PHONEME_LENGTH, (
-            f"Context length is {MAX_PHONEME_LENGTH}, but leave room for the pad token 0 at the start & end"
-        )
+        inputs = {
+            self._tokens_input: np.array(
+                [[0, *tokens, 0]], dtype=self._input_dtypes[self._tokens_input]
+            ),
+            "style": np.asarray(style, dtype=self._input_dtypes["style"]),
+            "speed": np.array(
+                [self._speed_value(speed)], dtype=self._input_dtypes["speed"]
+            ),
+        }
 
-        voice = voice[len(tokens)]
-        tokens = [[0, *tokens, 0]]
-        if "input_ids" in [i.name for i in self.sess.get_inputs()]:
-            # Newer export versions
-            inputs = {
-                "input_ids": tokens,
-                "style": np.array(voice, dtype=np.float32),
-                "speed": np.array([speed], dtype=np.int32),
-            }
-        else:
-            inputs = {
-                "tokens": tokens,
-                "style": voice,
-                "speed": np.ones(1, dtype=np.float32) * speed,
-            }
+        outputs = self.sess.run(None, inputs)
+        audio = np.asarray(outputs[0]).ravel()
+        duration = np.asarray(outputs[1]).ravel() if self.has_timings else None
 
-        audio = self.sess.run(None, inputs)[0]
         audio_duration = len(audio) / SAMPLE_RATE
         create_duration = time.time() - start_t
         rtf = create_duration / audio_duration
         log.debug(
-            f"Created audio in length of {audio_duration:.2f}s for {len(phonemes)} phonemes in {create_duration:.2f}s (RTF: {rtf:.2f}"
+            f"Created audio in length of {audio_duration:.2f}s for {len(tokens)} phonemes in {create_duration:.2f}s (RTF: {rtf:.2f}"
         )
+        return audio, duration
+
+    def _style_for(
+        self, voice: NDArray[np.float32], length: int
+    ) -> NDArray[np.float32]:
+        """One style vector per phoneme count, so n phonemes use row n - 1."""
+        return voice[min(length, len(voice)) - 1]
+
+    def _create_audio(
+        self, phonemes: str, voice: NDArray[np.float32], speed: float
+    ) -> tuple[NDArray[np.float32], int]:
+        log.debug(f"Phonemes: {phonemes}")
+        tokens = self.tokenizer.tokenize(phonemes)
+        if not tokens:
+            raise ValueError(f"No phonemes of {phonemes!r} are in the model vocabulary")
+        audio, _ = self._infer(tokens, self._style_for(voice, len(tokens)), speed)
         return audio, SAMPLE_RATE
 
     def get_voice_style(self, name: str) -> NDArray[np.float32]:
@@ -135,37 +165,76 @@ class Kokoro:
 
     def _split_phonemes(self, phonemes: str) -> list[str]:
         """
-        Split phonemes into batches of MAX_PHONEME_LENGTH
-        Prefer splitting at punctuation marks.
+        Split phonemes into batches of at most MAX_PHONEME_LENGTH.
+        Prefer splitting at punctuation marks, then at word boundaries.
         """
-        # Regular expression to split by punctuation and keep them
-        words = re.split(r"([.,!?;])", phonemes)
-        batched_phoenemes: list[str] = []
-        current_batch = ""
+        return split_phonemes(phonemes, MAX_PHONEME_LENGTH)
 
-        for part in words:
-            # Remove leading/trailing whitespace
-            part = part.strip()
+    def _prepare(
+        self,
+        text: str,
+        voice: str | NDArray[np.float32],
+        speed: float,
+        lang: str,
+        is_phonemes: bool,
+        sentence_pause: float,
+        clause_pause: float,
+    ) -> tuple[NDArray[np.float32], str, list[tuple[str, float]]]:
+        """Resolve the voice style and split the text into batches and pauses."""
+        if not 0.5 <= speed <= 2.0:
+            raise ValueError(f"Speed should be between 0.5 and 2.0, got {speed}")
 
-            if part:
-                # If adding the part exceeds the max length, split into a new batch
-                # TODO: make it more accurate
-                if len(current_batch) + len(part) + 1 >= MAX_PHONEME_LENGTH:
-                    batched_phoenemes.append(current_batch.strip())
-                    current_batch = part
-                else:
-                    if part in ".,!?;":
-                        current_batch += part
-                    else:
-                        if current_batch:
-                            current_batch += " "
-                        current_batch += part
+        if isinstance(voice, str):
+            if voice not in self.voices:
+                raise ValueError(f"Voice {voice} not found in available voices")
+            voice = self.get_voice_style(voice)
 
-        # Append the last batch if it contains any phonemes
-        if current_batch:
-            batched_phoenemes.append(current_batch.strip())
+        phonemes = text if is_phonemes else self.tokenizer.phonemize(text, lang)
+        batched_phonemes = self._split_phonemes(phonemes)
+        if not batched_phonemes:
+            raise ValueError(f"Nothing to synthesize, {text!r} produced no phonemes")
 
-        return batched_phoenemes
+        log.debug(
+            f"Creating audio for {len(batched_phonemes)} batches for {len(phonemes)} phonemes"
+        )
+        # Trimming removes the silence the model puts at a batch end, so the
+        # pause the punctuation calls for is added back when joining
+        batches = [
+            (batch, pause_after(batch, sentence_pause, clause_pause))
+            for batch in batched_phonemes[:-1]
+        ]
+        return voice, phonemes, [*batches, (batched_phonemes[-1], 0.0)]
+
+    def _create_batch(
+        self,
+        phonemes: str,
+        voice: NDArray[np.float32],
+        speed: float,
+        trim: bool,
+        pause: float = 0.0,
+    ) -> tuple[NDArray[np.float32], NDArray[np.int64] | None]:
+        """Synthesize one batch, trimming silence and pausing after when trimming."""
+        tokens = self.tokenizer.tokenize(phonemes)
+        if not tokens:
+            raise ValueError(f"No phonemes of {phonemes!r} are in the model vocabulary")
+
+        audio, duration = self._infer(
+            tokens, self._style_for(voice, len(tokens)), speed
+        )
+        # Drop the leading pad boundary so index i is where phoneme i starts
+        edges = token_edges(duration, len(audio))[1:] if duration is not None else None
+
+        if trim:
+            # Trim leading and trailing silence for a more natural sound concatenation
+            # (initial ~2s, subsequent ~0.02s)
+            trimmed, (head, _) = trim_audio(audio)
+            audio = trimmed
+            if edges is not None:
+                edges = np.clip(edges - head, 0, len(audio))
+            if pause:
+                silence = np.zeros(int(pause * SAMPLE_RATE), dtype=audio.dtype)
+                audio = np.concatenate([audio, silence])
+        return audio, edges
 
     def create(
         self,
@@ -175,38 +244,97 @@ class Kokoro:
         lang: str = "en-us",
         is_phonemes: bool = False,
         trim: bool = True,
+        sentence_pause: float = 0.25,
+        clause_pause: float = 0.1,
+        continuous: bool = False,
     ) -> tuple[NDArray[np.float32], int]:
         """
         Create audio from text using the specified voice and speed.
         """
-        assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
-
-        if isinstance(voice, str):
-            assert voice in self.voices, f"Voice {voice} not found in available voices"
-            voice = self.get_voice_style(voice)
-
-        start_t = time.time()
-        if is_phonemes:
-            phonemes = text
-        else:
-            phonemes = self.tokenizer.phonemize(text, lang)
-        # Create batches of phonemes by splitting spaces to MAX_PHONEME_LENGTH
-        batched_phoenemes = self._split_phonemes(phonemes)
-
-        audio = []
-        log.debug(
-            f"Creating audio for {len(batched_phoenemes)} batches for {len(phonemes)} phonemes"
+        audio, sample_rate, _ = self.create_timed(
+            text,
+            voice,
+            speed,
+            lang,
+            is_phonemes,
+            trim,
+            sentence_pause,
+            clause_pause,
+            continuous,
         )
-        for phonemes in batched_phoenemes:
-            audio_part, _ = self._create_audio(phonemes, voice, speed)
-            if trim:
-                # Trim leading and trailing silence for a more natural sound concatenation
-                # (initial ~2s, subsequent ~0.02s)
-                audio_part, _ = trim_audio(audio_part)
-            audio.append(audio_part)
-        audio = np.concatenate(audio)
+        return audio, sample_rate
+
+    def create_timed(
+        self,
+        text: str,
+        voice: str | NDArray[np.float32],
+        speed: float = 1.0,
+        lang: str = "en-us",
+        is_phonemes: bool = False,
+        trim: bool = True,
+        sentence_pause: float = 0.25,
+        clause_pause: float = 0.1,
+        continuous: bool = False,
+    ) -> tuple[NDArray[np.float32], int, list[Timing]]:
+        """
+        Create audio and report when each phoneme is spoken.
+
+        The timings are empty unless the model exposes a duration output.
+        With `continuous` the text is synthesized as overlapping windows, which
+        keeps prosody running across the joins but costs around 1.4x the work.
+        """
+        start_t = time.time()
+        voice, phonemes, batches = self._prepare(
+            text, voice, speed, lang, is_phonemes, sentence_pause, clause_pause
+        )
+
+        if continuous:
+            audio, spoken = self._create_continuous(phonemes, voice, speed)
+        else:
+            audio, spoken = self._create_batches(batches, voice, speed, trim)
+
         log.debug(f"Created audio in {time.time() - start_t:.2f}s")
-        return audio, SAMPLE_RATE
+        return audio, SAMPLE_RATE, spoken
+
+    def _create_batches(
+        self,
+        batches: list[tuple[str, float]],
+        voice: NDArray[np.float32],
+        speed: float,
+        trim: bool,
+    ) -> tuple[NDArray[np.float32], list[Timing]]:
+        """Synthesize each batch on its own and join the results."""
+        parts, spoken, offset = [], [], 0
+        for phonemes, pause in batches:
+            audio, edges = self._create_batch(phonemes, voice, speed, trim, pause)
+            if edges is not None:
+                spoken += timings(
+                    self.tokenizer.known(phonemes), edges + offset, SAMPLE_RATE
+                )
+            parts.append(audio)
+            offset += len(audio)
+        return np.concatenate(parts), spoken
+
+    def _create_continuous(
+        self, phonemes: str, voice: NDArray[np.float32], speed: float
+    ) -> tuple[NDArray[np.float32], list[Timing]]:
+        """Synthesize the whole text as overlapping windows."""
+        if not self.has_timings:
+            raise ValueError(
+                "continuous synthesis needs a model that reports durations, "
+                "export one with scripts/export.py"
+            )
+
+        tokens = self.tokenizer.tokenize(phonemes, limit=None)
+        style = self._style_for(voice, len(tokens))
+        audio, edges = synthesize(
+            lambda window: self._infer(window, style, speed),
+            tokens,
+            sample_rate=SAMPLE_RATE,
+            stops=self._stops,
+            spaces=self._spaces,
+        )
+        return audio, timings(self.tokenizer.known(phonemes), edges, SAMPLE_RATE)
 
     async def create_stream(
         self,
@@ -216,48 +344,57 @@ class Kokoro:
         lang: str = "en-us",
         is_phonemes: bool = False,
         trim: bool = True,
+        sentence_pause: float = 0.25,
+        clause_pause: float = 0.1,
     ) -> AsyncGenerator[tuple[NDArray[np.float32], int], None]:
         """
         Stream audio creation asynchronously in the background, yielding chunks as they are processed.
+
+        Abandoning the generator stops the stream; the batch already running in
+        the worker thread finishes, no further batch is started.
         """
-        assert speed >= 0.5 and speed <= 2.0, "Speed should be between 0.5 and 2.0"
+        voice, _, batches = self._prepare(
+            text, voice, speed, lang, is_phonemes, sentence_pause, clause_pause
+        )
 
-        if isinstance(voice, str):
-            assert voice in self.voices, f"Voice {voice} not found in available voices"
-            voice = self.get_voice_style(voice)
+        # One slot for the batch being played, one for the batch synthesized
+        # ahead of it, so the producer cannot run away with the whole text
+        queue: asyncio.Queue[tuple[NDArray[np.float32], int] | Exception | None] = (
+            asyncio.Queue(maxsize=1)
+        )
 
-        if is_phonemes:
-            phonemes = text
-        else:
-            phonemes = self.tokenizer.phonemize(text, lang)
-
-        batched_phonemes = self._split_phonemes(phonemes)
-        queue: asyncio.Queue[tuple[NDArray[np.float32], int] | None] = asyncio.Queue()
-
-        async def process_batches():
+        async def process_batches() -> None:
             """Process phoneme batches in the background."""
-            for i, phonemes in enumerate(batched_phonemes):
-                loop = asyncio.get_event_loop()
-                # Execute in separate thread since it's blocking operation
-                audio_part, sample_rate = await loop.run_in_executor(
-                    None, self._create_audio, phonemes, voice, speed
-                )
-                if trim:
-                    # Trim leading and trailing silence for a more natural sound concatenation
-                    # (initial ~2s, subsequent ~0.02s)
-                    audio_part, _ = trim_audio(audio_part)
-                log.debug(f"Processed chunk {i} of stream")
-                await queue.put((audio_part, sample_rate))
-            await queue.put(None)  # Signal the end of the stream
+            loop = asyncio.get_running_loop()
+            try:
+                for i, (phonemes, pause) in enumerate(batches):
+                    # Execute in separate thread since it's blocking operation
+                    audio, _ = await loop.run_in_executor(
+                        None, self._create_batch, phonemes, voice, speed, trim, pause
+                    )
+                    log.debug(f"Processed chunk {i} of stream")
+                    await queue.put((audio, SAMPLE_RATE))
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                # Hand the failure to the consumer instead of leaving it waiting
+                await queue.put(error)
+            else:
+                await queue.put(None)  # Signal the end of the stream
 
-        # Start processing in the background
-        asyncio.create_task(process_batches())
-
-        while True:
-            chunk = await queue.get()
-            if chunk is None:
-                break
-            yield chunk
+        task = asyncio.create_task(process_batches())
+        try:
+            while True:
+                item = await queue.get()
+                if item is None:
+                    break
+                if isinstance(item, Exception):
+                    raise item
+                yield item
+        finally:
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
 
     def get_voices(self) -> list[str]:
-        return list(sorted(self.voices.keys()))
+        return sorted(self.voices.keys())
