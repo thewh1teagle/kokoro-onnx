@@ -3,8 +3,8 @@ Note: on Linux you need to run this as well: apt-get install portaudio19-dev
 
 pip install -U kokoro-onnx sounddevice
 
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
-wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.0.onnx
+wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/voices-v1.0.bin
 
 PHONEMIZER_ESPEAK_LIBRARY="/usr/local/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.1.dylib" python examples/with_espeak_lib.py
 """

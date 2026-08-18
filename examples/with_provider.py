@@ -7,8 +7,8 @@ https://github.com/microsoft/onnxruntime/issues/22101#issuecomment-2357667377
 Setup:
 1. Install dependencies: pip install -U kokoro-onnx soundfile
 2. Download model and voices:
-   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
-   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.0.onnx
+   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/voices-v1.0.bin
 
 Run:
 macOS/Linux: ONNX_PROVIDER="CPUExecutionProvider" python examples/with_provider.py

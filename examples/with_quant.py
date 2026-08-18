@@ -7,12 +7,12 @@ Usage:
    sudo apt-get install portaudio19-dev
    pip install -U kokoro-onnx sounddevice
 2. Download a model (choose one):
-   - INT8 (88MB):
-     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.int8.onnx
-   - FP16 (169MB):
-     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/kokoro-v0_19.fp16.onnx
+   - INT8 (114MB):
+     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.0.int8.onnx
+   - FP16 (164MB):
+     wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.0.fp16.onnx
 3. Download voices-v1.0.bin:
-   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+   wget https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/voices-v1.0.bin
 4. Run example:
    python examples/with_quant.py <chosen_model>
 """

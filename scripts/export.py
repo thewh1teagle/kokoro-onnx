@@ -3,8 +3,10 @@
 # dependencies = [
 #     "kokoro==0.8.4",
 #     "numpy",
+#     "coloredlogs",
 #     "onnx>=1.17.0",
 #     "onnxruntime>=1.20.1",
+#     "psutil",
 #     "onnxscript>=0.5.0",
 # ]
 #
@@ -19,12 +21,15 @@ English (v1.0):
     mkdir -p checkpoints
     wget https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/config.json -O checkpoints/config.json
     wget https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/kokoro-v1_0.pth -O checkpoints/kokoro-v1_0.pth
-    uv run scripts/export.py -c checkpoints/config.json -p checkpoints/kokoro-v1_0.pth -o kokoro-v1.0.onnx
+    uv run scripts/export.py -c checkpoints/config.json -p checkpoints/kokoro-v1_0.pth -o kokoro-v1.0.onnx --fp16 --int8
 
 Chinese (v1.1-zh):
     wget https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh/resolve/main/config.json -O checkpoints/config-zh.json
     wget https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh/resolve/main/kokoro-v1_1-zh.pth -O checkpoints/kokoro-v1_1-zh.pth
-    uv run scripts/export.py -c checkpoints/config-zh.json -p checkpoints/kokoro-v1_1-zh.pth -o kokoro-v1.1-zh.onnx
+    uv run scripts/export.py -c checkpoints/config-zh.json -p checkpoints/kokoro-v1_1-zh.pth -o kokoro-v1.1-zh.onnx --fp16 --int8 -v zf_001
+
+--fp16 and --int8 write kokoro-*.fp16.onnx and kokoro-*.int8.onnx beside the
+full precision file. Both keep float inputs and outputs, so they are drop in.
 
 The duration output reports how many frames each token takes, 600 samples each,
 which is what kokoro_onnx uses for timestamps and for sliding window synthesis.
@@ -114,8 +119,12 @@ def export(model: KModelForONNX, path: Path, voice: str) -> None:
     print(f"exported {path} ({path.stat().st_size / 1e6:.0f} MB)")
 
 
-def verify(model: KModelForONNX, path: Path, voice: str) -> None:
-    """Check the graph against the torch model it was traced from."""
+def verify(model: KModelForONNX, path: Path, voice: str, strict: bool = True) -> None:
+    """Check the graph against the torch model it was traced from.
+
+    Quantized copies predict slightly different durations, so only the full
+    precision export is held to identical output.
+    """
     inputs = sample_inputs(model, voice)
     with torch.no_grad():
         expected, expected_duration = model(*inputs)
@@ -128,17 +137,55 @@ def verify(model: KModelForONNX, path: Path, voice: str) -> None:
 
     reference = expected.numpy()
     frames = int(np.sum(duration))
-    error = np.abs(waveform - reference).max() / np.abs(reference).max()
+    shared = min(len(waveform), len(reference))
+    error = (
+        np.abs(waveform[:shared] - reference[:shared]).max() / np.abs(reference).max()
+    )
+    drift = (len(waveform) - len(reference)) / SAMPLE_RATE
+
     print(f"  waveform  {len(waveform)} samples, {len(waveform) / SAMPLE_RATE:.2f}s")
     print(
         f"  duration  {frames} frames, {len(waveform) / frames:.0f} samples per frame"
     )
     print(
-        f"  against torch  peak error {error:.1%}, "
-        f"correlation {np.corrcoef(waveform, reference)[0, 1]:.4f}"
+        f"  against torch  peak error {error:.1%}, correlation "
+        f"{np.corrcoef(waveform[:shared], reference[:shared])[0, 1]:.4f}, "
+        f"length {drift:+.2f}s"
     )
-    assert np.array_equal(duration, expected_duration.numpy()), "durations disagree"
     assert len(waveform) == frames * FRAME, f"expected {FRAME} samples per frame"
+    if strict:
+        assert np.array_equal(duration, expected_duration.numpy()), "durations disagree"
+
+
+def quantize(path: Path, fp16: bool, int8: bool) -> list[Path]:
+    """Write reduced precision copies beside the full precision export."""
+    written = []
+
+    if fp16:
+        # onnxconverter_common leaves this graph with mismatched Cast types,
+        # onnxruntime's own converter handles them and the Loop subgraph
+        from onnxruntime.transformers.onnx_model import OnnxModel
+
+        target = path.with_suffix(".fp16.onnx")
+        graph = OnnxModel(onnx.load(str(path)))
+        # keep_io_types leaves inputs and outputs float32, so every variant
+        # is called exactly the same way
+        graph.convert_float_to_float16(
+            keep_io_types=True, use_symbolic_shape_infer=False
+        )
+        graph.save_model_to_file(str(target))
+        written.append(target)
+
+    if int8:
+        from onnxruntime.quantization import QuantType, quantize_dynamic
+
+        target = path.with_suffix(".int8.onnx")
+        quantize_dynamic(str(path), str(target), weight_type=QuantType.QInt8)
+        written.append(target)
+
+    for target in written:
+        print(f"quantized {target} ({target.stat().st_size / 1e6:.0f} MB)")
+    return written
 
 
 def main() -> None:
@@ -149,6 +196,8 @@ def main() -> None:
     parser.add_argument(
         "-v", "--voice", default="af_heart", help="voice used to verify"
     )
+    parser.add_argument("--fp16", action="store_true", help="also write a fp16 copy")
+    parser.add_argument("--int8", action="store_true", help="also write an int8 copy")
     parser.add_argument("--skip-verify", action="store_true")
     args = parser.parse_args()
 
@@ -161,8 +210,12 @@ def main() -> None:
 
     export(model, output, args.voice)
     embed_config(output, Path(args.config))
+    variants = quantize(output, args.fp16, args.int8)
+
     if not args.skip_verify:
-        verify(model, output, args.voice)
+        for path in [output, *variants]:
+            print(path.name)
+            verify(model, path, args.voice, strict=path == output)
 
 
 if __name__ == "__main__":
