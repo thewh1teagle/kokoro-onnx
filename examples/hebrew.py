@@ -8,8 +8,7 @@ Usage:
     Download these files
     wget https://huggingface.co/thewh1teagle/kokoro-hebrew-nc/resolve/main/kokoro.onnx
     wget https://huggingface.co/thewh1teagle/kokoro-hebrew-nc/resolve/main/voices-hebrew.bin
-    wget https://huggingface.co/thewh1teagle/kokoro-hebrew-nc/resolve/main/config.json
-    wget https://huggingface.co/thewh1teagle/renikud/resolve/main/model.onnx -O renikud.onnx
+    wget https://huggingface.co/thewh1teagle/renikud/resolve/neobert-130m/model.onnx -O renikud.onnx
 4. Run
     uv venv --seed -p 3.12
     source .venv/bin/activate
@@ -30,15 +29,18 @@ from kokoro_onnx import Kokoro
 # Hebrew G2P
 g2p = G2P("renikud.onnx")
 
-# Kokoro
-kokoro = Kokoro("kokoro.onnx", "voices-hebrew.bin", vocab_config="config.json")
+# Kokoro. The model carries its own vocabulary, so no vocab_config is needed
+kokoro = Kokoro("kokoro.onnx", "voices-hebrew.bin")
 
 # Phonemize
 text = "שימו לב נוסעים יקרים, הרכבת תכנס לתחנת תל אביב מרכז בעוד מספר דקות. אנא התרחקו מקצה הרציף."
 phonemes = g2p.phonemize(text)
 
-# Create
-samples, sample_rate = kokoro.create(phonemes, "he_shaul", is_phonemes=True)
+# Create. This model reports durations, so continuous keeps the prosody
+# running across the joins of a long text
+samples, sample_rate = kokoro.create(
+    phonemes, "he_shaul", is_phonemes=True, continuous=True
+)
 
 # Save
 sf.write("audio.wav", samples, sample_rate)
