@@ -89,6 +89,38 @@ def sample_inputs(model: KModelForONNX, voice: str) -> tuple[torch.Tensor, ...]:
     )
 
 
+def modernize(checkpoint: Path) -> Path:
+    """Rename new style weight norm keys to what KModel expects.
+
+    Checkpoints trained on recent torch store weight norm as
+    parametrizations.weight.original0/1, while KModel registers the old
+    weight_g/weight_v pair. It loads such a file with strict=False, leaving
+    those layers randomly initialized, and the model then emits static.
+    """
+    state = torch.load(checkpoint, map_location="cpu", weights_only=True)
+    renames = {
+        ".parametrizations.weight.original0": ".weight_g",
+        ".parametrizations.weight.original1": ".weight_v",
+    }
+    if not any(
+        old in key for part in state.values() for key in part for old in renames
+    ):
+        return checkpoint
+
+    for part in state.values():
+        for key in list(part):
+            new = key
+            for old, replacement in renames.items():
+                new = new.replace(old, replacement)
+            if new != key:
+                part[new] = part.pop(key)
+
+    target = checkpoint.with_suffix(".weightnorm.pth")
+    torch.save(state, target)
+    print(f"rewrote weight norm keys of {checkpoint.name} into {target.name}")
+    return target
+
+
 def embed_config(path: Path, config: Path) -> None:
     """Carry config.json inside the graph so the vocabulary travels with it."""
     graph = onnx.load(str(path))
@@ -204,8 +236,9 @@ def main() -> None:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
 
+    checkpoint = modernize(Path(args.checkpoint))
     model = KModelForONNX(
-        KModel(config=args.config, model=args.checkpoint, disable_complex=True)
+        KModel(config=args.config, model=str(checkpoint), disable_complex=True)
     ).eval()
 
     export(model, output, args.voice)

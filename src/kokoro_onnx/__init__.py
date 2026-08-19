@@ -14,6 +14,7 @@ from numpy.typing import NDArray
 from .chunker import pause_after, split_phonemes
 from .config import MAX_PHONEME_LENGTH, SAMPLE_RATE, EspeakConfig, KoKoroConfig
 from .log import log
+from .pauses import insert as insert_pauses
 from .session import create_session, embedded_vocab, input_dtypes
 from .sliding import Timing, synthesize, timings, token_edges
 from .tokenizer import Tokenizer
@@ -190,6 +191,9 @@ class Kokoro:
             voice = self.get_voice_style(voice)
 
         phonemes = text if is_phonemes else self.tokenizer.phonemize(text, lang)
+        # Newlines are not in the vocabulary, so without this the lines of a
+        # text run together with no gap for the model to pause on
+        phonemes = " ".join(phonemes.split())
         batched_phonemes = self._split_phonemes(phonemes)
         if not batched_phonemes:
             raise ValueError(f"Nothing to synthesize, {text!r} produced no phonemes")
@@ -293,6 +297,11 @@ class Kokoro:
         else:
             audio, spoken = self._create_batches(batches, voice, speed, trim)
 
+        # With timings a pause can be placed after every mark; without them
+        # only the batch joins carry one, added while the batches were made
+        audio, spoken = insert_pauses(
+            audio, spoken, SAMPLE_RATE, sentence_pause, clause_pause
+        )
         log.debug(f"Created audio in {time.time() - start_t:.2f}s")
         return audio, SAMPLE_RATE, spoken
 
