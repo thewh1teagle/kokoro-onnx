@@ -27,3 +27,5 @@ espeak-ng-data/
 .venv
 models/
 .env.local
+*.mp4
+*.txt
