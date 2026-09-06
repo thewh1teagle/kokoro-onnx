@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" },
 ]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 dependencies = [
     "onnxruntime>=1.20.1",
     "espeakng-loader>=0.2.4",
