@@ -86,12 +86,16 @@ def insert(
     parts: list[NDArray[np.float32]] = []
     moved: list[Timing] = []
     cut, shift = 0, 0.0
+    # Marks after the last spoken phoneme have nothing left to pause before
+    last_spoken = max(
+        (i for i, timing in enumerate(timings) if timing.phoneme.isalpha()), default=-1
+    )
 
-    for timing in timings:
+    for index, timing in enumerate(timings):
         moved.append(Timing(timing.phoneme, timing.start + shift, timing.end + shift))
 
         target = wanted_after(timing.phoneme, sentence, clause)
-        if not target:
+        if not target or index > last_spoken:
             continue
 
         at = int(timing.end * sample_rate) // frame
