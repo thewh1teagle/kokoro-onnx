@@ -66,11 +66,15 @@ def resolve_providers() -> list[str]:
     return ["CPUExecutionProvider"]
 
 
-def create_session(model_path: str) -> rt.InferenceSession:
-    """Load the model on the providers this installation can use."""
+def create_session(
+    model_path: str, sess_options: rt.SessionOptions | None = None
+) -> rt.InferenceSession:
+    """Load the model on the providers this installation can use, with optional session options."""
     providers = resolve_providers()
     log.debug(f"Providers: {providers}")
-    return rt.InferenceSession(model_path, providers=providers)
+    return rt.InferenceSession(
+        model_path, sess_options=sess_options, providers=providers
+    )
 
 
 def embedded_vocab(session: rt.InferenceSession) -> dict:

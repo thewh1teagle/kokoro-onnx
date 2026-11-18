@@ -28,13 +28,14 @@ class Kokoro:
         voices_path: str,
         espeak_config: EspeakConfig | None = None,
         vocab_config: dict | str | None = None,
+        sess_options: rt.SessionOptions | None = None,
     ):
         # Show useful information for bug reports
         log.debug(
             f"koko-onnx version {importlib.metadata.version('kokoro-onnx')} on {platform.platform()} {platform.version()}"
         )
         self._setup(
-            session=create_session(model_path),
+            session=create_session(model_path, sess_options),
             model_path=model_path,
             voices_path=voices_path,
             espeak_config=espeak_config,
