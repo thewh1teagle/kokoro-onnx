@@ -8,6 +8,7 @@ Usage:
     Run
     uv venv -p 3.12
     uv pip install -U kokoro-onnx soundfile 'misaki-fork[ja]'
+    uv run -m unidic download
 3.
     Download these files
     https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1/kokoro-v1.1-zh.onnx
